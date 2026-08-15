@@ -4,79 +4,76 @@ import Image from "next/image";
 import { ChefHat, Leaf, Star, Truck } from "lucide-react";
 import { AddToCartButton } from "@/components/AddToCartButton";
 import { Button } from "@/components/Button";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { getProductBySlug } from "@/data/products";
 import { formatNumber, formatPrice, formatRating } from "@/lib/format";
 
 const heroProduct = getProductBySlug("poulet-creme-moutarde")!;
 
 const argumentsList = [
-  { icon: Leaf, title: "Ingrédients frais", text: "Sélectionnés avec soin" },
-  { icon: ChefHat, title: "Cuisiné chaque jour", text: "Dans nos cuisines" },
-  { icon: Truck, title: "Livraison rapide", text: "Chez vous, au frais" },
+  { icon: Leaf, title: "Ingrédients frais" },
+  { icon: ChefHat, title: "Cuisiné chaque jour" },
+  { icon: Truck, title: "Livraison rapide" },
 ];
 
 export function Hero() {
   return (
-    <section className="relative">
-      <div className="relative min-h-[560px] overflow-hidden sm:min-h-[620px] lg:min-h-[680px]">
+    <section className="relative w-full">
+      <div className="relative h-[260px] w-full overflow-hidden sm:h-[300px] lg:h-[340px] xl:h-[360px]">
         <Image
-          src={heroProduct.image}
+          src="/hero-banner.jpg"
           alt="Poulet crème moutarde, pommes grenailles rôties et carottes fondantes"
           fill
           preload
           fetchPriority="high"
           sizes="100vw"
-          className="object-cover object-[68%_center]"
+          className="object-cover object-[78%_center]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-cream via-cream/90 to-cream/55 lg:bg-gradient-to-r lg:from-cream lg:via-cream/88 lg:to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-cream via-cream/55 to-transparent sm:from-cream/90 sm:via-cream/35 sm:to-transparent" />
 
-        <div className="relative mx-auto grid min-h-[560px] max-w-[1320px] items-center gap-10 px-4 py-12 sm:min-h-[620px] sm:px-6 lg:min-h-[680px] lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-16">
+        <div className="relative mx-auto flex h-full max-w-[1320px] items-center px-4 sm:px-6 lg:px-8">
           <div className="max-w-xl">
-            <h1 className="font-display text-[2.4rem] leading-[1.08] tracking-tight text-forest sm:text-5xl lg:text-[3.55rem]">
+            <h1 className="font-display text-[1.7rem] leading-[1.08] tracking-tight text-forest sm:text-[2.1rem] lg:text-[2.45rem]">
               Des plats maison,
               <br />
               comme si c’était les vôtres.
             </h1>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-forest/75 sm:text-lg">
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-forest/75 sm:text-[0.95rem]">
               Des recettes généreuses, préparées chaque jour avec des ingrédients frais et de saison.
             </p>
-            <Button href="/plats" size="lg" className="mt-8 rounded-2xl px-7">
+            <Button href="/plats" size="md" className="mt-5 rounded-full px-6">
               Découvrir nos plats
             </Button>
-            <ul className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <ul className="mt-5 hidden gap-6 sm:flex">
               {argumentsList.map((item) => (
-                <li key={item.title} className="flex items-start gap-3">
-                  <item.icon className="mt-0.5 h-5 w-5 shrink-0 text-forest" strokeWidth={1.6} />
-                  <div>
-                    <p className="text-sm font-semibold text-forest">{item.title}</p>
-                    <p className="text-xs text-forest/65">{item.text}</p>
-                  </div>
+                <li key={item.title} className="flex items-center gap-2">
+                  <item.icon className="h-4 w-4 shrink-0 text-forest" strokeWidth={1.7} />
+                  <p className="text-xs font-semibold text-forest">{item.title}</p>
                 </li>
               ))}
             </ul>
           </div>
-
-          <div className="relative flex items-end justify-end lg:min-h-[420px]">
-            <article className="w-full max-w-[320px] rounded-[1.35rem] bg-white p-5 shadow-[0_18px_50px_-24px_rgba(17,17,17,0.45)]">
-              <h2 className="text-base font-semibold text-forest">{heroProduct.name}</h2>
-              <p className="mt-1 text-sm text-muted">{heroProduct.shortDescription}</p>
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                <span className="rounded-full bg-cream-dark px-2.5 py-1 text-[11px] font-medium text-forest">
-                  🏠 Complet
-                </span>
-                <span className="inline-flex items-center gap-1 text-forest">
-                  <Star className="h-3.5 w-3.5 fill-quince text-quince" />
-                  <span className="font-medium">{formatRating(heroProduct.rating)}</span>
-                  <span className="text-muted">({formatNumber(heroProduct.reviews)} avis)</span>
-                </span>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-lg font-semibold text-forest">{formatPrice(heroProduct.price)}</p>
-                <AddToCartButton product={heroProduct} className="h-10 w-10 rounded-full" />
-              </div>
-            </article>
-          </div>
         </div>
+
+        <article className="absolute right-4 bottom-4 hidden w-[280px] rounded-2xl bg-white p-4 shadow-[0_18px_50px_-24px_rgba(17,17,17,0.45)] sm:right-6 lg:right-[max(2rem,calc((100vw-1320px)/2+2rem))] lg:bottom-6 lg:block">
+          <div className="flex items-start justify-between gap-3">
+            <h2 className="text-sm font-semibold text-forest">{heroProduct.name}</h2>
+            <FavoriteButton productId={heroProduct.id} size="sm" className="h-7 w-7 shrink-0 shadow-none" />
+          </div>
+          <p className="mt-1 text-xs text-muted">{heroProduct.shortDescription}</p>
+          <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs">
+            <span className="rounded-full bg-cream-dark px-2 py-0.5 font-medium text-forest">🏠 Complet</span>
+            <span className="inline-flex items-center gap-1 text-forest">
+              <Star className="h-3 w-3 fill-quince text-quince" />
+              <span className="font-medium">{formatRating(heroProduct.rating)}</span>
+              <span className="text-muted">({formatNumber(heroProduct.reviews)})</span>
+            </span>
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-base font-semibold text-forest">{formatPrice(heroProduct.price)}</p>
+            <AddToCartButton product={heroProduct} className="h-9 w-9 rounded-full" />
+          </div>
+        </article>
       </div>
     </section>
   );
