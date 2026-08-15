@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Playfair_Display } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import { CartDrawer } from "@/components/CartDrawer";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Providers } from "@/context/Providers";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-playfair",
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${playfair.variable} ${playfair.className} h-full antialiased`}>
+    <html lang="fr" className={`${montserrat.variable} ${montserrat.className} h-full antialiased`}>
       <body className="min-h-full bg-cream font-sans text-ink">
         <Providers>
           <Header />
