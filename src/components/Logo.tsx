@@ -8,7 +8,9 @@ export function Logo({ className, compact = false }: { className?: string; compa
       <span className="inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-quince text-ink" aria-hidden>
         <QuinceMark className="h-8 w-8" />
       </span>
-      {compact ? null : <span className="text-[1.15rem] font-semibold tracking-tight">Quince</span>}
+      {compact ? null : (
+        <span className="font-display text-[1.25rem] font-semibold tracking-tight text-forest">Quince</span>
+      )}
     </Link>
   );
 }

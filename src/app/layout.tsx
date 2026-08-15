@@ -1,21 +1,15 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Inter } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import { CartDrawer } from "@/components/CartDrawer";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Providers } from "@/context/Providers";
 import "./globals.css";
 
-const inter = Inter({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const dmSerif = DM_Serif_Display({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-dm",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-playfair",
   display: "swap",
 });
 
@@ -30,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${inter.variable} ${dmSerif.variable} h-full antialiased`}>
+    <html lang="fr" className={`${playfair.variable} ${playfair.className} h-full antialiased`}>
       <body className="min-h-full bg-cream font-sans text-ink">
         <Providers>
           <Header />

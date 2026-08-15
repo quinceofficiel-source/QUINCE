@@ -11,8 +11,8 @@
   --color-sage: #dfe6df;
   --color-muted: #6b6b6b;
   --color-line: #e7e1d6;
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-dm);
+  --font-sans: var(--font-playfair);
+  --font-display: var(--font-playfair);
   --shadow-card: 0 10px 30px -18px rgb(17 17 17 / 0.18);
 }
 
@@ -23,7 +23,7 @@ html {
 body {
   background: #faf8f3;
   color: #111111;
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
 }
 
 ::selection {
@@ -37,7 +37,7 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-dm), ui-serif, Georgia, serif;
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
 }
 
 .scrollbar-hide {
