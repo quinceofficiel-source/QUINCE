@@ -8,8 +8,8 @@ export function Logo({ className, compact = false }: { className?: string; compa
       <Image
         src="/logo.png"
         alt="Quince"
-        width={2586}
-        height={731}
+        width={870}
+        height={252}
         className={cn("w-auto", compact ? "h-[22px]" : "h-7")}
         priority
       />
