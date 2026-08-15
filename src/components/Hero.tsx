@@ -19,17 +19,19 @@ const argumentsList = [
 export function Hero() {
   return (
     <section className="relative w-full">
-      <div className="relative h-[260px] w-full overflow-hidden sm:h-[300px] lg:h-[340px] xl:h-[360px]">
+      <div className="relative aspect-[1024/341] w-full overflow-hidden">
         <Image
           src="/hero-banner.jpg"
           alt="Poulet crème moutarde, pommes grenailles rôties et carottes fondantes"
           fill
           preload
           fetchPriority="high"
+          quality={100}
+          unoptimized
           sizes="100vw"
-          className="object-cover object-[78%_center]"
+          className="object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-cream via-cream/55 to-transparent sm:from-cream/90 sm:via-cream/35 sm:to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-cream/80 via-cream/20 to-transparent" />
 
         <div className="relative mx-auto flex h-full max-w-[1320px] items-center px-4 sm:px-6 lg:px-8">
           <div className="max-w-xl">
