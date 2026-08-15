@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <Container className="pt-4 pb-8">
+      <Container className="pt-6 pb-8 sm:pt-8">
         <Suspense>
           <CategoryCarousel />
         </Suspense>
