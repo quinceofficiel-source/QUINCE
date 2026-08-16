@@ -13,7 +13,7 @@ export function setOrderSoundEnabled(enabled: boolean) {
 
 function getAudio() {
   if (!audio) {
-    audio = new Audio("/sounds/chaching.wav");
+    audio = new Audio("/sounds/ring.mp3");
     audio.preload = "auto";
     audio.volume = 1;
   }
