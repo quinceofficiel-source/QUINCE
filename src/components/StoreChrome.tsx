@@ -1,5 +1,22 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+import { CartDrawer } from "@/components/CartDrawer";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+
 export function StoreChrome({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  const pathname = usePathname();
+  if (pathname.startsWith("/admin")) {
+    return <>{children}</>;
+  }
+
+  return (
+    <>
+      <Header />
+      <main className="min-w-0 overflow-x-clip">{children}</main>
+      <Footer />
+      <CartDrawer />
+    </>
+  );
 }

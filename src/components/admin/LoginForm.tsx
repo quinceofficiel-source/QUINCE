@@ -10,7 +10,7 @@ export function LoginForm() {
 
   return (
     <div className="mx-auto w-full max-w-md rounded-[1.75rem] bg-white p-8 shadow-[0_20px_60px_-36px_rgba(17,17,17,0.35)]">
-      <Image src="/logo.png" alt="Quince" width={870} height={252} className="h-8 w-auto" />
+      <Image src="/logo.png" alt="Quince" width={198} height={246} className="h-10 w-auto" />
       <h1 className="mt-6 font-display text-3xl tracking-tight">Back-office</h1>
       <p className="mt-2 text-sm text-muted">Accès réservé à l’équipe Quince.</p>
       <form action={action} className="mt-8 space-y-4">

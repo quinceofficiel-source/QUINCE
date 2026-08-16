@@ -33,7 +33,7 @@ export function AdminShell({
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 border-r border-line bg-white print:hidden lg:flex lg:flex-col">
         <div className="flex h-16 items-center px-5">
           <Link href="/admin" className="inline-flex items-center" aria-label="Back-office Quince">
-            <Image src="/logo.png" alt="Quince" width={870} height={252} className="h-6 w-auto" />
+            <Image src="/logo.png" alt="Quince" width={198} height={246} className="h-7 w-auto" />
           </Link>
         </div>
         <nav className="flex-1 space-y-0.5 px-3 py-2">
@@ -63,7 +63,7 @@ export function AdminShell({
       <div className="print:pl-0 lg:pl-60">
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-white/90 px-4 backdrop-blur print:hidden">
           <Link href="/admin" className="lg:hidden">
-            <Image src="/logo.png" alt="Quince" width={870} height={252} className="h-5 w-auto" />
+            <Image src="/logo.png" alt="Quince" width={198} height={246} className="h-6 w-auto" />
           </Link>
           <form action="/admin/orders" className="relative hidden min-w-0 flex-1 md:block">
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted" />

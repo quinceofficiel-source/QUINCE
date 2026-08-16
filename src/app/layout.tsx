@@ -12,8 +12,12 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Quince",
-  description: "Quince.",
+  title: {
+    default: "Quince — Des plats maison, comme si c’était les vôtres",
+    template: "%s · Quince",
+  },
+  description:
+    "Des recettes généreuses, préparées chaque jour avec des ingrédients frais et de saison. Livraison à domicile.",
 };
 
 export const viewport: Viewport = {
@@ -25,7 +29,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${montserrat.variable} ${montserrat.className} h-full overflow-x-clip antialiased`}>
-      <body className="min-h-full overflow-x-clip bg-black font-sans text-ink">
+      <body className="min-h-full overflow-x-clip bg-cream font-sans text-ink">
         <Providers>
           <StoreChrome>{children}</StoreChrome>
         </Providers>
