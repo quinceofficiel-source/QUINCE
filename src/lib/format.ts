@@ -22,3 +22,33 @@ export function plural(count: number, singular: string, pluralForm: string) {
 }
 
 export const FREE_SHIPPING_THRESHOLD = 60;
+
+const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+});
+
+const dateTimeFormatter = new Intl.DateTimeFormat("fr-FR", {
+  day: "2-digit",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("fr-FR", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+export function formatDate(value: string | Date) {
+  return dateFormatter.format(new Date(value));
+}
+
+export function formatDateTime(value: string | Date) {
+  return dateTimeFormatter.format(new Date(value));
+}
+
+export function formatTime(value: string | Date) {
+  return timeFormatter.format(new Date(value));
+}

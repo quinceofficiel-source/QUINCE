@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
-import { CartDrawer } from "@/components/CartDrawer";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
+import { StoreChrome } from "@/components/StoreChrome";
 import { Providers } from "@/context/Providers";
 import "./globals.css";
 
@@ -27,10 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="fr" className={`${montserrat.variable} ${montserrat.className} h-full antialiased`}>
       <body className="min-h-full bg-cream font-sans text-ink">
         <Providers>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-          <CartDrawer />
+          <StoreChrome>{children}</StoreChrome>
         </Providers>
       </body>
     </html>
