@@ -11,7 +11,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-cream px-4 py-16">
       <div className="mx-auto w-full max-w-md rounded-[1.75rem] bg-white p-8">
-        <Image src="/logo.png" alt="Quince" width={198} height={246} className="h-10 w-auto" />
+        <Image src="/logo.png" alt="Quince" width={915} height={284} className="h-8 w-auto" />
         <h1 className="mt-6 font-display text-3xl">Mot de passe oublié</h1>
         <p className="mt-2 text-sm text-muted">Indiquez votre email professionnel. Si le compte existe, un lien de réinitialisation sera envoyé.</p>
         {state?.sent ? (
