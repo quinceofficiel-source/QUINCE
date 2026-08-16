@@ -125,7 +125,7 @@ export function CheckoutFlow() {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+    <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div>
         <ol className="mb-8 flex gap-2 text-sm">
           {steps.map((label, index) => (

@@ -14,7 +14,7 @@ export function MoodCards() {
   return (
     <section className="py-10 sm:py-14">
       <Container>
-        <h2 className="font-display text-3xl tracking-tight sm:text-4xl">Aujourd’hui, j’ai envie de...</h2>
+        <h2 className="font-display text-[1.65rem] tracking-tight sm:text-4xl">Aujourd’hui, j’ai envie de...</h2>
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {moods.map((mood) => (
             <Link

@@ -14,7 +14,7 @@ export function StoreChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main className="min-w-0 overflow-x-clip">{children}</main>
       <Footer />
       <CartDrawer />
     </>

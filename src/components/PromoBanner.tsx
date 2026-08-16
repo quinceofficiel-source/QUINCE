@@ -30,7 +30,7 @@ export function PromoBanner({
   return (
     <article className={cn("grid overflow-hidden rounded-[1.75rem] md:grid-cols-2", tones[tone], className)}>
       <div className="flex flex-col justify-center p-6 sm:p-8">
-        <h3 className="font-display text-3xl leading-tight text-ink">{title}</h3>
+        <h3 className="font-display text-2xl leading-tight text-ink sm:text-3xl">{title}</h3>
         <p className="mt-3 max-w-sm text-sm leading-relaxed text-ink/75">{text}</p>
         <Button href={href} variant={tone === "yellow" ? "white" : "dark"} className="mt-6 w-fit">
           {cta}

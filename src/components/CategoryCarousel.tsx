@@ -11,7 +11,7 @@ export function CategoryCarousel() {
   const isNew = params.get("nouveautes") === "1";
 
   return (
-    <div className="scrollbar-hide flex justify-start gap-3 overflow-x-auto pb-1 sm:gap-4 lg:justify-between">
+    <div className="scrollbar-hide flex w-full min-w-0 max-w-full justify-start gap-3 overflow-x-auto overscroll-x-contain pb-1 sm:gap-4 lg:justify-between">
       {CATEGORIES.map((category) => {
         const selected =
           (category.id === "nouveau" && isNew) ||

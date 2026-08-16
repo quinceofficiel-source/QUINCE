@@ -16,7 +16,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
   return (
     <article
       className={cn(
-        "group relative flex h-full min-w-[240px] flex-col overflow-hidden rounded-[1.35rem] bg-white shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-0.5 hover:shadow-lg",
+        "group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.35rem] bg-white shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-0.5 hover:shadow-lg",
         className,
       )}
     >

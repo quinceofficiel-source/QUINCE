@@ -35,7 +35,7 @@ export function ProductDetail({ product }: { product: Product }) {
               {product.category === "maison" ? "🏠 " : ""}
               {getCategoryLabel(product.category)}
             </span>
-            <h1 className="mt-4 font-display text-4xl tracking-tight sm:text-5xl">{product.name}</h1>
+            <h1 className="mt-4 font-display text-3xl tracking-tight sm:text-5xl">{product.name}</h1>
             <p className="mt-3 flex items-center gap-2 text-sm">
               <Star className="h-4 w-4 fill-quince text-quince" />
               <span className="font-medium">{formatRating(product.rating)}</span>
@@ -75,7 +75,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 product={product}
                 servings={portion.servings}
                 label={`Ajouter · ${formatPrice(portion.price)}`}
-                className="min-w-[220px] rounded-full"
+                className="w-full min-w-0 rounded-full sm:w-auto sm:min-w-[220px]"
               />
             </div>
           </div>

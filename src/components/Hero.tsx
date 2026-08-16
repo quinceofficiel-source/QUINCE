@@ -18,8 +18,8 @@ const argumentsList = [
 
 export function Hero() {
   return (
-    <section className="relative w-full">
-      <div className="relative aspect-[1024/341] w-full overflow-hidden">
+    <section className="relative w-full overflow-hidden">
+      <div className="relative isolate min-h-[22.5rem] w-full sm:min-h-[20rem] lg:aspect-[1024/341] lg:min-h-0">
         <Image
           src="/hero-banner.jpg"
           alt="Poulet crème moutarde, pommes grenailles rôties et carottes fondantes"
@@ -29,13 +29,13 @@ export function Hero() {
           quality={100}
           unoptimized
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-cover object-[center_35%] lg:object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-cream/80 via-cream/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-cream/85 via-cream/35 to-transparent" />
 
-        <div className="relative mx-auto flex h-full max-w-[1320px] items-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-xl">
-            <h1 className="font-display text-[1.7rem] leading-[1.08] tracking-tight text-forest sm:text-[2.1rem] lg:text-[2.45rem]">
+        <div className="relative z-10 mx-auto flex h-full min-h-[22.5rem] w-full max-w-[1320px] items-center px-4 py-8 sm:min-h-[20rem] sm:px-6 lg:min-h-0 lg:px-8 lg:py-0">
+          <div className="min-w-0 max-w-xl">
+            <h1 className="font-display text-[1.65rem] leading-[1.12] tracking-tight text-forest sm:text-[2.1rem] lg:text-[2.45rem]">
               Des plats maison,
               <br />
               comme si c’était les vôtres.
@@ -57,7 +57,7 @@ export function Hero() {
           </div>
         </div>
 
-        <article className="absolute right-4 bottom-4 hidden w-[280px] rounded-2xl bg-white p-4 shadow-[0_18px_50px_-24px_rgba(17,17,17,0.45)] sm:right-6 lg:right-[max(2rem,calc((100vw-1320px)/2+2rem))] lg:bottom-6 lg:block">
+        <article className="absolute right-4 bottom-4 hidden w-[280px] rounded-2xl bg-white p-4 shadow-[0_18px_50px_-24px_rgba(17,17,17,0.45)] sm:right-6 lg:right-[max(2rem,calc((100%-1320px)/2+2rem))] lg:bottom-6 lg:block">
           <div className="flex items-start justify-between gap-3">
             <h2 className="text-sm font-semibold text-forest">{heroProduct.name}</h2>
             <FavoriteButton productId={heroProduct.id} size="sm" className="h-7 w-7 shrink-0 shadow-none" />

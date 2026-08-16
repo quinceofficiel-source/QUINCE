@@ -29,7 +29,7 @@ export function CatalogView({ title = "Nos plats", subtitle }: { title?: string;
 
   return (
     <div className="pb-16">
-      <h1 className="font-display text-4xl tracking-tight sm:text-5xl">{title}</h1>
+      <h1 className="font-display text-3xl tracking-tight sm:text-5xl">{title}</h1>
       {subtitle ? <p className="mt-3 max-w-2xl text-muted">{subtitle}</p> : null}
       <div className="mt-8">
         <CategoryCarousel />

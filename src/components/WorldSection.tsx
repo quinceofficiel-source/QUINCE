@@ -15,9 +15,9 @@ export function WorldSection() {
   return (
     <section className="py-10 sm:py-14">
       <Container>
-        <h2 className="font-display text-3xl tracking-tight sm:text-4xl">Faites le tour du monde</h2>
+        <h2 className="font-display text-[1.65rem] tracking-tight sm:text-4xl">Faites le tour du monde</h2>
         <p className="mt-2 max-w-xl text-muted">Des recettes inspirées d’ici et d’ailleurs, cuisinées dans nos ateliers.</p>
-        <div className="scrollbar-hide mt-6 flex gap-2 overflow-x-auto pb-1">
+        <div className="scrollbar-hide mt-6 flex w-full min-w-0 max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1">
           {CUISINES.map((item) => (
             <button
               key={item.id}
@@ -33,9 +33,9 @@ export function WorldSection() {
             </button>
           ))}
         </div>
-        <div className="scrollbar-hide mt-6 -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
+        <div className="scrollbar-hide mt-6 flex w-full min-w-0 max-w-full gap-4 overflow-x-auto overscroll-x-contain pb-2">
           {dishes.map((product) => (
-            <ProductCard key={product.id} product={product} className="w-[260px] shrink-0" />
+            <ProductCard key={product.id} product={product} className="w-[260px] max-w-full shrink-0" />
           ))}
         </div>
       </Container>

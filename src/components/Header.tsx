@@ -24,17 +24,17 @@ function HeaderBar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-line/80 bg-cream/90 backdrop-blur-md">
-      <div className="mx-auto flex h-[72px] max-w-[1320px] items-center gap-4 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[72px] w-full min-w-0 max-w-[1320px] items-center gap-2 px-4 sm:gap-4 sm:px-6 lg:px-8">
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full lg:hidden"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full lg:hidden"
           onClick={() => setMobileOpen(true)}
           aria-label="Ouvrir le menu"
         >
           <Menu className="h-5 w-5" />
         </button>
 
-        <Logo />
+        <Logo className="min-w-0" />
 
         <nav className="ml-4 hidden items-center gap-6 lg:flex" aria-label="Navigation principale">
           {NAV_LINKS.map((link) => (
@@ -55,10 +55,10 @@ function HeaderBar() {
           <SearchBar />
         </div>
 
-        <div className="ml-auto flex items-center gap-1 md:ml-3 md:gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-1 md:ml-3 md:gap-2">
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full md:hidden"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full md:hidden"
             onClick={() => setSearchOpen((open) => !open)}
             aria-label="Rechercher"
           >
@@ -82,7 +82,7 @@ function HeaderBar() {
             type="button"
             onClick={openCart}
             className={cn(
-              "inline-flex min-h-11 items-center gap-2 rounded-2xl bg-quince px-3 py-2 text-left text-ink transition hover:bg-quince-dark",
+              "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-2xl bg-quince px-3 py-2 text-left text-ink transition hover:bg-quince-dark",
               lastAddedId && "scale-[1.03]",
             )}
             aria-label="Ouvrir le panier"

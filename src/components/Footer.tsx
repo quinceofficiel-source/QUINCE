@@ -51,16 +51,16 @@ export function Footer() {
               <label htmlFor="newsletter" className="text-sm font-semibold">
                 Recevez les nouveautés Quince
               </label>
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2 flex min-w-0 gap-2">
                 <input
                   id="newsletter"
                   name="email"
                   type="email"
                   required
                   placeholder="Votre email"
-                  className="h-11 flex-1 rounded-full border border-line bg-cream px-4 text-sm"
+                  className="h-11 min-w-0 flex-1 rounded-full border border-line bg-cream px-4 text-sm"
                 />
-                <button type="submit" className="h-11 rounded-full bg-ink px-4 text-sm font-medium text-white">
+                <button type="submit" className="h-11 shrink-0 rounded-full bg-ink px-4 text-sm font-medium text-white">
                   S’inscrire
                 </button>
               </div>

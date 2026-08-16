@@ -15,9 +15,9 @@ export function SectionHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("mb-6 flex items-end justify-between gap-4", className)}>
-      <div>
-        <h2 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">{title}</h2>
+    <div className={cn("mb-6 flex items-end justify-between gap-3 sm:gap-4", className)}>
+      <div className="min-w-0">
+        <h2 className="font-display text-[1.65rem] leading-tight tracking-tight text-ink sm:text-3xl lg:text-4xl">{title}</h2>
         {subtitle ? <p className="mt-2 max-w-xl text-sm text-muted sm:text-base">{subtitle}</p> : null}
       </div>
       {href ? (

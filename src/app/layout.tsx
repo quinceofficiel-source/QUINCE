@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import { StoreChrome } from "@/components/StoreChrome";
 import { Providers } from "@/context/Providers";
@@ -20,10 +20,16 @@ export const metadata: Metadata = {
     "Des recettes généreuses, préparées chaque jour avec des ingrédients frais et de saison. Livraison à domicile.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${montserrat.variable} ${montserrat.className} h-full antialiased`}>
-      <body className="min-h-full bg-cream font-sans text-ink">
+    <html lang="fr" className={`${montserrat.variable} ${montserrat.className} h-full overflow-x-clip antialiased`}>
+      <body className="min-h-full overflow-x-clip bg-cream font-sans text-ink">
         <Providers>
           <StoreChrome>{children}</StoreChrome>
         </Providers>

@@ -10,7 +10,7 @@ export function Logo({ className, compact = false }: { className?: string; compa
         alt="Quince"
         width={870}
         height={252}
-        className={cn("w-auto", compact ? "h-[22px]" : "h-7")}
+        className={cn("w-auto max-w-[132px] sm:max-w-none", compact ? "h-[22px]" : "h-7")}
         priority
       />
     </Link>
