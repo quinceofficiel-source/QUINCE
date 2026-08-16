@@ -57,6 +57,7 @@ export type AdminProduct = Product & {
   reserved: number;
   active: boolean;
   weightGrams: number;
+  images: string[];
 };
 
 export type OrderLine = {
@@ -163,6 +164,9 @@ export type AdminNotification = {
   href: string;
   at: string;
   read: boolean;
+  orderId?: string;
+  customerName?: string;
+  amount?: number;
 };
 
 export type AdminState = {

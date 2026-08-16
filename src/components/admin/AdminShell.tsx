@@ -8,6 +8,7 @@ import { logoutAdmin, markAdminNotificationsRead } from "@/lib/admin/actions";
 import { can } from "@/lib/admin/permissions";
 import { ROLE_LABELS, type AdminNotification, type StaffRole } from "@/lib/admin/types";
 import { ADMIN_NAV } from "@/components/admin/nav";
+import { OrderAlert } from "@/components/admin/OrderAlert";
 import { cn } from "@/lib/cn";
 import { formatTime } from "@/lib/format";
 
@@ -117,6 +118,7 @@ export function AdminShell({
         </div>
         <div className="p-4 sm:p-6 lg:p-8">{children}</div>
       </div>
+      <OrderAlert />
     </div>
   );
 }

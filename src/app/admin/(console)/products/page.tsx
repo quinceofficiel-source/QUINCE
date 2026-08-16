@@ -28,6 +28,7 @@ export default async function AdminProductsPage() {
         <table className="w-full min-w-[800px] text-left text-sm">
           <thead className="border-b border-line text-xs text-muted">
             <tr>
+              <th className="px-4 py-3 font-medium">Aperçu</th>
               <th className="px-4 py-3 font-medium">Plat</th>
               <th className="px-4 py-3 font-medium">Catégorie</th>
               <th className="px-4 py-3 font-medium">Prix</th>
@@ -37,8 +38,28 @@ export default async function AdminProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
+            {products.map((product) => {
+              const thumbs = [...new Set([product.image, ...(product.images ?? [])].filter(Boolean))].slice(0, 4);
+              return (
               <tr key={product.id} className="border-b border-line/70">
+                <td className="px-4 py-3">
+                  <div className="flex -space-x-2">
+                    {thumbs.map((src) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={src}
+                        src={src}
+                        alt=""
+                        className="h-12 w-12 rounded-xl object-cover ring-2 ring-white"
+                      />
+                    ))}
+                    {(product.images?.length ?? 1) > 4 ? (
+                      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-cream text-xs font-medium ring-2 ring-white">
+                        +{(product.images?.length ?? 1) - 4}
+                      </span>
+                    ) : null}
+                  </div>
+                </td>
                 <td className="px-4 py-3 font-medium">{product.name}</td>
                 <td className="px-4 py-3">{labels[product.category] ?? product.category}</td>
                 <td className="px-4 py-3">
@@ -75,7 +96,8 @@ export default async function AdminProductsPage() {
                   </div>
                 </td>
               </tr>
-            ))}
+            );
+            })}
           </tbody>
         </table>
       </div>

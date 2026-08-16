@@ -8,7 +8,9 @@ import { getAdminActor, requireAdmin } from "@/lib/admin/dal";
 import { createAdminSession, destroyAdminSession } from "@/lib/admin/session";
 import { getAdminStore } from "@/lib/admin/store";
 import type { AdminProduct, OrderStatus, Promotion, PromotionType } from "@/lib/admin/types";
-import type { CategoryId } from "@/types/product";
+import { saveProductUploads, uniqueImages } from "@/lib/admin/uploads";
+import type { CategoryId, CheckoutAddress } from "@/types/product";
+import { getProductById } from "@/data/products";
 
 export type AuthState = { error?: string; sent?: boolean } | undefined;
 
@@ -76,6 +78,12 @@ export async function saveProduct(formData: FormData) {
   const isNew = formData.get("isNew") === "1";
   const id = String(formData.get("id") || slugify(String(formData.get("name") ?? "plat")));
   const current = getAdminStore().product(id);
+  const uploaded = await saveProductUploads(
+    id,
+    formData.getAll("files").filter((item): item is File => item instanceof File),
+  );
+  const images = uniqueImages([...formData.getAll("images").map(String), ...uploaded]);
+  const cover = images[0] || current?.image || "/hero-banner.jpg";
   const price = Number(formData.get("price"));
   const promo = String(formData.get("promoPrice") ?? "").trim();
   const product: AdminProduct = {
@@ -85,7 +93,8 @@ export async function saveProduct(formData: FormData) {
     description: String(formData.get("description") ?? "").trim(),
     shortDescription: String(formData.get("shortDescription") ?? "").trim(),
     price,
-    image: String(formData.get("image") ?? current?.image ?? "/hero-banner.jpg"),
+    image: cover,
+    images: images.length ? images : [cover],
     category: String(formData.get("category") ?? "maison") as CategoryId,
     tags: splitList(formData.get("tags")).length ? splitList(formData.get("tags")) : (current?.tags ?? []),
     calories: Number(formData.get("calories") ?? 0),
@@ -198,4 +207,42 @@ function slugify(value: string) {
     .replace(/\p{Diacritic}/gu, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "") || `plat-${Date.now()}`;
+}
+
+export async function submitStorefrontOrder(input: {
+  id: string;
+  createdAt: string;
+  lines: Array<{ productId: string; name: string; quantity: number; unitPrice: number }>;
+  subtotal: number;
+  shipping: number;
+  total: number;
+  address: CheckoutAddress;
+  slotLabel: string;
+}) {
+  if (!input.lines.length || !input.address.firstName || !input.address.phone) {
+    throw new Error("Commande incomplète.");
+  }
+  const order = getAdminStore().ingestStorefrontOrder({
+    id: input.id,
+    createdAt: input.createdAt,
+    customerName: `${input.address.firstName} ${input.address.lastName}`.trim(),
+    customerEmail: `${input.address.firstName}.${input.address.lastName}@client.quince.fr`
+      .toLowerCase()
+      .replace(/\s+/g, ""),
+    customerPhone: input.address.phone,
+    address: [input.address.street, input.address.complement].filter(Boolean).join(", "),
+    city: input.address.city,
+    zip: input.address.zip,
+    instructions: input.address.instructions,
+    slotLabel: input.slotLabel,
+    lines: input.lines.map((line) => ({
+      ...line,
+      allergens: getProductById(line.productId)?.allergens ?? [],
+    })),
+    subtotal: input.subtotal,
+    shipping: input.shipping,
+    total: input.total,
+  });
+  revalidatePath("/admin", "layout");
+  return { id: order.id };
 }

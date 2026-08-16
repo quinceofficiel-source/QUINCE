@@ -1,3 +1,4 @@
+import { PhotoGallery } from "@/components/admin/PhotoGallery";
 import { saveProduct } from "@/lib/admin/actions";
 import { CATEGORY_OPTIONS, type AdminProduct } from "@/lib/admin/types";
 
@@ -11,6 +12,10 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const input = "h-11 w-full rounded-xl border border-line bg-cream px-3 text-sm";
+
+function uniqueKeep(images: string[] | undefined, cover: string) {
+  return [...new Set([cover, ...(images ?? [])].filter(Boolean))];
+}
 
 export function ProductForm({ product }: { product?: AdminProduct }) {
   const isNew = !product;
@@ -33,9 +38,9 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
       <Field label="Description courte">
         <input name="shortDescription" defaultValue={product?.shortDescription} className={input} />
       </Field>
-      <Field label="Photo (URL)">
-        <input name="image" defaultValue={product?.image} className={input} />
-      </Field>
+      <div className="lg:col-span-2">
+        <PhotoGallery initialImages={product ? uniqueKeep(product.images, product.image) : []} />
+      </div>
       <div className="lg:col-span-2">
         <Field label="Description">
           <textarea name="description" rows={4} defaultValue={product?.description} className="w-full rounded-xl border border-line bg-cream p-3 text-sm" />

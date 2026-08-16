@@ -181,6 +181,88 @@ class AdminStore {
     });
   }
 
+  ingestStorefrontOrder(input: {
+    id: string;
+    createdAt: string;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    address: string;
+    city: string;
+    zip: string;
+    instructions: string;
+    slotLabel: string;
+    lines: Array<{ productId: string; name: string; quantity: number; unitPrice: number; allergens: string[] }>;
+    subtotal: number;
+    shipping: number;
+    total: number;
+  }) {
+    const existing = this.state.orders.find((item) => item.id === input.id);
+    if (existing) return structuredClone(existing);
+
+    let customer = this.state.customers.find(
+      (item) => item.email.toLowerCase() === input.customerEmail.toLowerCase() || item.phone === input.customerPhone,
+    );
+    if (!customer) {
+      const [firstName, ...rest] = input.customerName.split(" ");
+      customer = {
+        id: `cus-${Date.now()}`,
+        firstName: firstName || "Client",
+        lastName: rest.join(" ") || "",
+        email: input.customerEmail,
+        phone: input.customerPhone,
+        createdAt: input.createdAt,
+        favoriteProductIds: [],
+        addresses: [{ label: "Domicile", street: input.address, zip: input.zip, city: input.city }],
+        credit: 0,
+        promoCodesUsed: [],
+        notes: [],
+      };
+      this.state.customers.unshift(customer);
+    }
+
+    const order: AdminOrder = {
+      id: input.id,
+      createdAt: input.createdAt,
+      customerId: customer.id,
+      customerName: input.customerName,
+      customerEmail: input.customerEmail,
+      customerPhone: input.customerPhone,
+      address: input.address,
+      city: input.city,
+      zip: input.zip,
+      instructions: input.instructions,
+      slotLabel: input.slotLabel,
+      lines: input.lines,
+      subtotal: input.subtotal,
+      discount: 0,
+      shipping: input.shipping,
+      total: input.total,
+      paymentMethod: "card",
+      paymentStatus: "paid",
+      status: "nouvelle",
+      courierId: null,
+      courierName: null,
+      internalNotes: [],
+      history: [{ status: "nouvelle", at: input.createdAt, by: "Boutique" }],
+      promoCode: null,
+    };
+    this.state.orders.unshift(order);
+    this.state.notifications.unshift({
+      id: `ntf-order-${order.id}`,
+      type: "order",
+      title: "Nouvelle commande",
+      body: `${order.customerName} · ${order.total.toFixed(2).replace(".", ",")} €`,
+      href: `/admin/orders/${order.id}`,
+      at: input.createdAt,
+      read: false,
+      orderId: order.id,
+      customerName: order.customerName,
+      amount: order.total,
+    });
+    return structuredClone(order);
+  }
+
   dashboard(): DashboardStats {
     const now = new Date();
     const startToday = new Date(now);

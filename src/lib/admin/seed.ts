@@ -45,6 +45,7 @@ export function createInitialState(now = new Date()): AdminState {
     const reserved = Math.floor(stock * (rand() * 0.25));
     return {
       ...product,
+      images: [product.image],
       promoPrice: index % 11 === 0 ? Math.round(product.price * 0.85 * 10) / 10 : null,
       stock,
       minStock: product.kind === "plat" ? 8 : 12,
@@ -268,6 +269,9 @@ export function createInitialState(now = new Date()): AdminState {
         href: "/admin/orders/QX-10480",
         at: new Date(now.getTime() - 12 * 60000).toISOString(),
         read: false,
+        orderId: "QX-10480",
+        customerName: "Emma Dupont",
+        amount: 32.7,
       },
       {
         id: "ntf-2",
