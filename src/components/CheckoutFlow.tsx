@@ -9,7 +9,7 @@ import { DELIVERY_SLOTS } from "@/data/slots";
 import { getProductById } from "@/data/products";
 import { formatPrice } from "@/lib/format";
 import { STORAGE_KEYS, writeJson } from "@/lib/storage";
-import { submitStorefrontOrder } from "@/lib/admin/actions";
+import { LIVE_ORDER_CHANNEL } from "@/lib/admin/live-message";
 import type { CheckoutAddress, Order } from "@/types/product";
 import { cn } from "@/lib/cn";
 
@@ -63,21 +63,47 @@ export function CheckoutFlow() {
       slotLabel: slot.label,
     };
     writeJson(STORAGE_KEYS.order, order);
+    const customerName = `${order.address.firstName} ${order.address.lastName}`.trim();
     try {
-      await submitStorefrontOrder({
-        id: order.id,
-        createdAt: order.createdAt,
-        lines: order.lines.map((line) => ({
-          productId: line.productId,
-          name: line.name,
-          quantity: line.quantity,
-          unitPrice: line.unitPrice,
-        })),
-        subtotal: order.subtotal,
-        shipping: order.shipping,
-        total: order.total,
-        address: order.address,
-        slotLabel: order.slotLabel,
+      const channel = new BroadcastChannel(LIVE_ORDER_CHANNEL);
+      channel.postMessage({
+        type: "order",
+        notification: {
+          id: `ntf-order-${order.id}`,
+          type: "order",
+          title: "Nouvelle commande",
+          body: `${customerName} · ${order.total.toFixed(2).replace(".", ",")} €`,
+          href: `/admin/orders/${order.id}`,
+          at: order.createdAt,
+          read: false,
+          orderId: order.id,
+          customerName,
+          amount: order.total,
+        },
+      });
+      channel.close();
+    } catch {
+      /* BroadcastChannel indisponible */
+    }
+    try {
+      await fetch("/api/storefront/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: order.id,
+          createdAt: order.createdAt,
+          lines: order.lines.map((line) => ({
+            productId: line.productId,
+            name: line.name,
+            quantity: line.quantity,
+            unitPrice: line.unitPrice,
+          })),
+          subtotal: order.subtotal,
+          shipping: order.shipping,
+          total: order.total,
+          address: order.address,
+          slotLabel: order.slotLabel,
+        }),
       });
     } catch {
       /* le paiement client reste validé même si le back-office est indisponible */

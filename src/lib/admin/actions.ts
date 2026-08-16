@@ -9,8 +9,8 @@ import { createAdminSession, destroyAdminSession } from "@/lib/admin/session";
 import { getAdminStore } from "@/lib/admin/store";
 import type { AdminProduct, OrderStatus, Promotion, PromotionType } from "@/lib/admin/types";
 import { saveProductUploads, uniqueImages } from "@/lib/admin/uploads";
+import { ingestCheckoutOrder } from "@/lib/admin/storefront";
 import type { CategoryId, CheckoutAddress } from "@/types/product";
-import { getProductById } from "@/data/products";
 
 export type AuthState = { error?: string; sent?: boolean } | undefined;
 
@@ -219,30 +219,7 @@ export async function submitStorefrontOrder(input: {
   address: CheckoutAddress;
   slotLabel: string;
 }) {
-  if (!input.lines.length || !input.address.firstName || !input.address.phone) {
-    throw new Error("Commande incomplète.");
-  }
-  const order = getAdminStore().ingestStorefrontOrder({
-    id: input.id,
-    createdAt: input.createdAt,
-    customerName: `${input.address.firstName} ${input.address.lastName}`.trim(),
-    customerEmail: `${input.address.firstName}.${input.address.lastName}@client.quince.fr`
-      .toLowerCase()
-      .replace(/\s+/g, ""),
-    customerPhone: input.address.phone,
-    address: [input.address.street, input.address.complement].filter(Boolean).join(", "),
-    city: input.address.city,
-    zip: input.address.zip,
-    instructions: input.address.instructions,
-    slotLabel: input.slotLabel,
-    lines: input.lines.map((line) => ({
-      ...line,
-      allergens: getProductById(line.productId)?.allergens ?? [],
-    })),
-    subtotal: input.subtotal,
-    shipping: input.shipping,
-    total: input.total,
-  });
+  const order = ingestCheckoutOrder(input);
   revalidatePath("/admin", "layout");
   return { id: order.id };
 }

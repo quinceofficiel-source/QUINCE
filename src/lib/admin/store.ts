@@ -1,6 +1,9 @@
 import { createInitialState } from "@/lib/admin/seed";
+import { publishLiveOrder } from "@/lib/admin/live";
+import { readPersistedState, storeFileMtime, writePersistedState } from "@/lib/admin/persist";
 import type {
   AdminLog,
+  AdminNotification,
   AdminOrder,
   AdminProduct,
   AdminState,
@@ -10,13 +13,31 @@ import type {
   StaffUser,
 } from "@/lib/admin/types";
 
-const globalForStore = globalThis as typeof globalThis & { __quinceAdminStore?: AdminStore };
+const globalForStore = globalThis as typeof globalThis & { __quinceAdminStoreV2?: AdminStore };
 
 class AdminStore {
   private state: AdminState;
+  private diskMtime = 0;
 
   constructor() {
-    this.state = createInitialState();
+    const persisted = readPersistedState();
+    this.state = persisted ?? createInitialState();
+    if (!persisted) this.persist();
+    else this.diskMtime = storeFileMtime();
+  }
+
+  syncFromDisk() {
+    const mtime = storeFileMtime();
+    if (!mtime || mtime <= this.diskMtime) return;
+    const next = readPersistedState();
+    if (!next) return;
+    this.state = next;
+    this.diskMtime = mtime;
+  }
+
+  private persist() {
+    writePersistedState(this.state);
+    this.diskMtime = storeFileMtime() || Date.now();
   }
 
   snapshot(): AdminState {
@@ -86,6 +107,7 @@ class AdminStore {
       entityId,
     };
     this.state.logs.unshift(entry);
+    this.persist();
   }
 
   setOrderStatus(id: string, status: OrderStatus, actor: StaffUser, note?: string) {
@@ -98,6 +120,7 @@ class AdminStore {
     }
     order.history.push({ status, at: new Date().toISOString(), by: actor.name, note });
     this.log(actor, `Statut → ${status}`, "order", id);
+    this.persist();
     return structuredClone(order);
   }
 
@@ -106,6 +129,7 @@ class AdminStore {
     if (!order) return null;
     order.internalNotes.push(note);
     this.log(actor, "Note interne", "order", id);
+    this.persist();
     return structuredClone(order);
   }
 
@@ -116,6 +140,7 @@ class AdminStore {
     order.courierId = courier.id;
     order.courierName = courier.name;
     this.log(actor, `Livreur ${courier.name}`, "order", id);
+    this.persist();
     return structuredClone(order);
   }
 
@@ -124,6 +149,7 @@ class AdminStore {
     if (index >= 0) this.state.products[index] = input;
     else this.state.products.unshift(input);
     this.log(actor, isNew ? "Création plat" : "Modification plat", "product", input.id);
+    this.persist();
     return structuredClone(input);
   }
 
@@ -132,6 +158,7 @@ class AdminStore {
     if (!product) return null;
     product.active = active;
     this.log(actor, active ? "Activation plat" : "Désactivation plat", "product", id);
+    this.persist();
     return structuredClone(product);
   }
 
@@ -140,6 +167,7 @@ class AdminStore {
     this.state.products = this.state.products.filter((item) => item.id !== id);
     if (this.state.products.length === before) return false;
     this.log(actor, "Suppression plat", "product", id);
+    this.persist();
     return true;
   }
 
@@ -148,6 +176,7 @@ class AdminStore {
     if (!product) return null;
     product.stock = Math.max(0, Math.round(stock));
     this.log(actor, `Stock → ${product.stock}`, "product", id);
+    this.persist();
     return structuredClone(product);
   }
 
@@ -156,6 +185,7 @@ class AdminStore {
     if (!customer) return null;
     customer.notes.push(note);
     this.log(actor, "Note client", "customer", id);
+    this.persist();
     return structuredClone(customer);
   }
 
@@ -164,6 +194,7 @@ class AdminStore {
     if (index >= 0) this.state.promotions[index] = promo;
     else this.state.promotions.unshift(promo);
     this.log(actor, isNew ? "Création promo" : "Modification promo", "promotion", promo.id);
+    this.persist();
     return structuredClone(promo);
   }
 
@@ -172,6 +203,7 @@ class AdminStore {
     if (!promo) return null;
     promo.active = !promo.active;
     this.log(actor, promo.active ? "Activation promo" : "Désactivation promo", "promotion", id);
+    this.persist();
     return structuredClone(promo);
   }
 
@@ -179,6 +211,7 @@ class AdminStore {
     this.state.notifications.forEach((item) => {
       item.read = true;
     });
+    this.persist();
   }
 
   ingestStorefrontOrder(input: {
@@ -248,7 +281,7 @@ class AdminStore {
       promoCode: null,
     };
     this.state.orders.unshift(order);
-    this.state.notifications.unshift({
+    const notification: AdminNotification = {
       id: `ntf-order-${order.id}`,
       type: "order",
       title: "Nouvelle commande",
@@ -259,7 +292,10 @@ class AdminStore {
       orderId: order.id,
       customerName: order.customerName,
       amount: order.total,
-    });
+    };
+    this.state.notifications.unshift(notification);
+    this.persist();
+    publishLiveOrder(notification);
     return structuredClone(order);
   }
 
@@ -332,8 +368,9 @@ class AdminStore {
 }
 
 export function getAdminStore() {
-  if (!globalForStore.__quinceAdminStore) {
-    globalForStore.__quinceAdminStore = new AdminStore();
+  if (!globalForStore.__quinceAdminStoreV2) {
+    globalForStore.__quinceAdminStoreV2 = new AdminStore();
   }
-  return globalForStore.__quinceAdminStore;
+  globalForStore.__quinceAdminStoreV2.syncFromDisk();
+  return globalForStore.__quinceAdminStoreV2;
 }

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Volume2, VolumeX, X } from "lucide-react";
 import type { AdminNotification } from "@/lib/admin/types";
+import { LIVE_ORDER_CHANNEL, type LiveOrderEvent } from "@/lib/admin/live-message";
 import { formatPrice } from "@/lib/format";
 import { enableOrderSound, isOrderSoundEnabled, playOrderSound } from "@/components/admin/orderSound";
 
@@ -32,7 +33,7 @@ export function OrderAlert() {
       }
       router.refresh();
       if (hideTimer.current) window.clearTimeout(hideTimer.current);
-      hideTimer.current = window.setTimeout(() => setToast(null), 10000);
+      hideTimer.current = window.setTimeout(() => setToast(null), 12000);
     },
     [router],
   );
@@ -40,35 +41,53 @@ export function OrderAlert() {
   useEffect(() => {
     let cancelled = false;
 
-    async function tick(isFirst: boolean) {
+    function ingest(item: AdminNotification | undefined) {
+      if (!item || item.type !== "order" || seen.current.has(item.id) || cancelled) return;
+      seen.current.add(item.id);
+      showOrder(item);
+    }
+
+    function ingestSnapshot(notifications: AdminNotification[]) {
+      const now = Date.now();
+      notifications.forEach((item) => {
+        const age = now - new Date(item.at).getTime();
+        if (Number.isNaN(age) || age > FRESH_MS) seen.current.add(item.id);
+      });
+      ingest(notifications.find((item) => !seen.current.has(item.id)));
+    }
+
+    async function poll() {
       const response = await fetch("/api/admin/live-orders", { cache: "no-store" });
       if (!response.ok || cancelled) return;
       const data = (await response.json()) as { notifications: AdminNotification[] };
-      const now = Date.now();
-      const incoming = data.notifications.filter((item) => item.type === "order");
-
-      if (isFirst) {
-        incoming.forEach((item) => {
-          const age = now - new Date(item.at).getTime();
-          if (Number.isNaN(age) || age > FRESH_MS) seen.current.add(item.id);
-        });
-      }
-
-      const fresh = incoming.filter((item) => !seen.current.has(item.id));
-      if (!fresh.length) return;
-      fresh.forEach((item) => seen.current.add(item.id));
-      showOrder(fresh[0]!);
+      ingestSnapshot(data.notifications.filter((item) => item.type === "order"));
     }
 
-    void tick(true);
-    const id = window.setInterval(() => void tick(false), 1500);
+    const stream = new EventSource("/api/admin/live-orders/stream");
+    stream.onmessage = (event) => {
+      if (!event.data || cancelled) return;
+      const payload = JSON.parse(event.data) as LiveOrderEvent;
+      if (payload.type === "snapshot") ingestSnapshot(payload.notifications);
+      if (payload.type === "order") ingest(payload.notification);
+    };
+
+    const channel = new BroadcastChannel(LIVE_ORDER_CHANNEL);
+    channel.onmessage = (event: MessageEvent<LiveOrderEvent>) => {
+      if (event.data?.type === "order") ingest(event.data.notification);
+    };
+
+    void poll();
+    const pollId = window.setInterval(() => void poll(), 2000);
     const onVisible = () => {
-      if (document.visibilityState === "visible") void tick(false);
+      if (document.visibilityState === "visible") void poll();
     };
     document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       cancelled = true;
-      window.clearInterval(id);
+      stream.close();
+      channel.close();
+      window.clearInterval(pollId);
       document.removeEventListener("visibilitychange", onVisible);
       if (hideTimer.current) window.clearTimeout(hideTimer.current);
     };
@@ -85,7 +104,7 @@ export function OrderAlert() {
 
   return (
     <>
-      {!soundOn ? (
+      {!soundOn && !toast ? (
         <button
           type="button"
           onClick={() => void turnSoundOn()}
