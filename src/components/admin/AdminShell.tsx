@@ -9,6 +9,7 @@ import { can } from "@/lib/admin/permissions";
 import { ROLE_LABELS, type AdminNotification, type StaffRole } from "@/lib/admin/types";
 import { ADMIN_NAV } from "@/components/admin/nav";
 import { OrderAlert } from "@/components/admin/OrderAlert";
+import { OrderSoundToggle } from "@/components/admin/OrderSoundToggle";
 import { cn } from "@/lib/cn";
 import { formatTime } from "@/lib/format";
 
@@ -73,6 +74,7 @@ export function AdminShell({
               className="h-10 w-full max-w-xl rounded-full border border-line bg-cream pl-10 pr-4 text-sm"
             />
           </form>
+          <OrderSoundToggle />
           <details className="relative">
             <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full hover:bg-cream">
               <Bell className="h-4 w-4" />

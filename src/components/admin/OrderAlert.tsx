@@ -1,61 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { Volume2, VolumeX, X } from "lucide-react";
 import type { AdminNotification } from "@/lib/admin/types";
 import { formatPrice } from "@/lib/format";
+import { enableOrderSound, isOrderSoundEnabled, playOrderSound } from "@/components/admin/orderSound";
 
-let audioCtx: AudioContext | null = null;
-
-function getAudioContext() {
-  const AudioCtor =
-    window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-  if (!AudioCtor) return null;
-  if (!audioCtx) audioCtx = new AudioCtor();
-  if (audioCtx.state === "suspended") void audioCtx.resume();
-  return audioCtx;
-}
-
-function playChaChing() {
-  const ctx = getAudioContext();
-  if (!ctx) return;
-  const now = ctx.currentTime;
-
-  const ding = (freq: number, start: number, duration: number, gain: number) => {
-    const osc = ctx.createOscillator();
-    const amp = ctx.createGain();
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(freq, now + start);
-    amp.gain.setValueAtTime(0.0001, now + start);
-    amp.gain.exponentialRampToValueAtTime(gain, now + start + 0.018);
-    amp.gain.exponentialRampToValueAtTime(0.0001, now + start + duration);
-    osc.connect(amp);
-    amp.connect(ctx.destination);
-    osc.start(now + start);
-    osc.stop(now + start + duration + 0.04);
-  };
-
-  ding(1318.51, 0, 0.14, 0.11);
-  ding(1760, 0.09, 0.28, 0.13);
-  ding(2093, 0.16, 0.4, 0.07);
-}
+const FRESH_MS = 2 * 60 * 1000;
 
 export function OrderAlert() {
   const router = useRouter();
   const seen = useRef(new Set<string>());
   const [toast, setToast] = useState<AdminNotification | null>(null);
+  const [soundOn, setSoundOn] = useState(false);
   const hideTimer = useRef<number | null>(null);
 
   useEffect(() => {
-    const unlock = () => {
-      getAudioContext();
-      window.removeEventListener("pointerdown", unlock);
-    };
-    window.addEventListener("pointerdown", unlock);
-    return () => window.removeEventListener("pointerdown", unlock);
+    setSoundOn(isOrderSoundEnabled());
+    const sync = () => setSoundOn(isOrderSoundEnabled());
+    window.addEventListener("quince:order-sound", sync);
+    return () => window.removeEventListener("quince:order-sound", sync);
   }, []);
+
+  const showOrder = useCallback(
+    (item: AdminNotification) => {
+      setToast(item);
+      if (isOrderSoundEnabled()) {
+        void playOrderSound().catch(() => undefined);
+      }
+      router.refresh();
+      if (hideTimer.current) window.clearTimeout(hideTimer.current);
+      hideTimer.current = window.setTimeout(() => setToast(null), 10000);
+    },
+    [router],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -64,55 +44,91 @@ export function OrderAlert() {
       const response = await fetch("/api/admin/live-orders", { cache: "no-store" });
       if (!response.ok || cancelled) return;
       const data = (await response.json()) as { notifications: AdminNotification[] };
+      const now = Date.now();
+      const incoming = data.notifications.filter((item) => item.type === "order");
+
       if (isFirst) {
-        data.notifications.forEach((item) => seen.current.add(item.id));
-        return;
+        incoming.forEach((item) => {
+          const age = now - new Date(item.at).getTime();
+          if (Number.isNaN(age) || age > FRESH_MS) seen.current.add(item.id);
+        });
       }
-      const fresh = data.notifications.filter((item) => item.type === "order" && !seen.current.has(item.id));
+
+      const fresh = incoming.filter((item) => !seen.current.has(item.id));
       if (!fresh.length) return;
       fresh.forEach((item) => seen.current.add(item.id));
-      const latest = fresh[0]!;
-      setToast(latest);
-      playChaChing();
-      router.refresh();
-      if (hideTimer.current) window.clearTimeout(hideTimer.current);
-      hideTimer.current = window.setTimeout(() => setToast(null), 8000);
+      showOrder(fresh[0]!);
     }
 
     void tick(true);
-    const id = window.setInterval(() => void tick(false), 3000);
+    const id = window.setInterval(() => void tick(false), 1500);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void tick(false);
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
       window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
       if (hideTimer.current) window.clearTimeout(hideTimer.current);
     };
-  }, [router]);
+  }, [showOrder]);
 
-  if (!toast) return null;
+  async function turnSoundOn() {
+    try {
+      await enableOrderSound();
+      setSoundOn(true);
+    } catch {
+      setSoundOn(false);
+    }
+  }
 
   return (
-    <div className="pointer-events-none fixed bottom-6 left-6 z-[80] w-[min(100%-2rem,22rem)] print:hidden lg:left-[calc(15rem+1.5rem)]">
-      <div className="pointer-events-auto overflow-hidden rounded-2xl bg-ink text-white shadow-[0_24px_60px_-20px_rgba(17,17,17,0.55)]">
-        <div className="h-1 bg-quince" />
-        <div className="p-4">
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-[11px] font-semibold tracking-[0.18em] text-quince uppercase">Nouvelle commande</p>
-            <button type="button" onClick={() => setToast(null)} className="rounded-full p-1 text-white/70 hover:text-white" aria-label="Fermer">
-              <X className="h-4 w-4" />
-            </button>
+    <>
+      {!soundOn ? (
+        <button
+          type="button"
+          onClick={() => void turnSoundOn()}
+          className="fixed bottom-6 left-6 z-[70] inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white shadow-lg print:hidden lg:left-[calc(15rem+1.5rem)]"
+        >
+          <VolumeX className="h-4 w-4 text-quince" />
+          Activer le son des commandes
+        </button>
+      ) : null}
+
+      {toast ? (
+        <div className="pointer-events-none fixed bottom-6 left-6 z-[80] w-[min(100%-2rem,22rem)] print:hidden lg:left-[calc(15rem+1.5rem)]">
+          <div className="pointer-events-auto overflow-hidden rounded-2xl bg-ink text-white shadow-[0_24px_60px_-20px_rgba(17,17,17,0.55)]">
+            <div className="h-1 bg-quince" />
+            <div className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-[11px] font-semibold tracking-[0.18em] text-quince uppercase">Nouvelle commande</p>
+                <button type="button" onClick={() => setToast(null)} className="rounded-full p-1 text-white/70 hover:text-white" aria-label="Fermer">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="mt-2 text-2xl font-semibold tracking-tight">{toast.amount != null ? formatPrice(toast.amount) : toast.orderId}</p>
+              <p className="mt-1 text-sm text-white/75">{toast.customerName ?? toast.body}</p>
+              <p className="mt-1 text-xs text-white/50">{toast.orderId}</p>
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <Link
+                  href={toast.href}
+                  onClick={() => setToast(null)}
+                  className="inline-flex h-10 items-center rounded-full bg-quince px-4 text-sm font-semibold text-ink"
+                >
+                  Voir la commande
+                </Link>
+                {!soundOn ? (
+                  <button type="button" onClick={() => void turnSoundOn()} className="inline-flex h-10 items-center gap-2 rounded-full px-3 text-sm text-white/80 hover:text-white">
+                    <Volume2 className="h-4 w-4" />
+                    Écouter
+                  </button>
+                ) : null}
+              </div>
+            </div>
           </div>
-          <p className="mt-2 text-2xl font-semibold tracking-tight">{toast.amount != null ? formatPrice(toast.amount) : toast.orderId}</p>
-          <p className="mt-1 text-sm text-white/75">{toast.customerName ?? toast.body}</p>
-          <p className="mt-1 text-xs text-white/50">{toast.orderId}</p>
-          <Link
-            href={toast.href}
-            onClick={() => setToast(null)}
-            className="mt-4 inline-flex h-10 items-center rounded-full bg-quince px-4 text-sm font-semibold text-ink"
-          >
-            Voir la commande
-          </Link>
         </div>
-      </div>
-    </div>
+      ) : null}
+    </>
   );
 }
