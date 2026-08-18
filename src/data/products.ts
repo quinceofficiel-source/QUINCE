@@ -291,7 +291,7 @@ const drafts: Draft[] = [
     description:
       "Semoule légère, légumes fondants, agneau, poulet et merguez. Un couscous généreux, épicé juste ce qu’il faut, à partager.",
     price: 11.9,
-    image: photo("photo-1511690743698-d9d5107a2fcd"),
+    image: photo("photo-1626082927389-6cd097cdc6ec"),
     category: "decouverte",
     tags: ["famille", "gourmand", "proteine"],
     calories: 610,
@@ -446,7 +446,7 @@ const drafts: Draft[] = [
     description:
       "Bœuf effiloché mijoté, purée de pommes de terre au beurre, chapelure dorée. Le plat réconfort par excellence.",
     price: 9.9,
-    image: photo("photo-1574484284002-952d92469875"),
+    image: photo("photo-1432139555190-58524dae6a55"),
     category: "maison",
     tags: ["famille", "kids", "gourmand"],
     calories: 530,
@@ -725,7 +725,7 @@ const drafts: Draft[] = [
     description:
       "Ravioli frais farcis à la ricotta et aux épinards, nappés de beurre noisette. Un plat végétal, délicat et rassasiant.",
     price: 10.9,
-    image: photo("photo-1587740908075-9e213609989e"),
+    image: photo("photo-1551183053-bf91a1d81141"),
     category: "vege",
     tags: ["gourmand", "duo", "complet"],
     calories: 490,
@@ -849,7 +849,7 @@ const drafts: Draft[] = [
     description:
       "Canard confit effiloché, purée de pommes de terre, chapelure dorée. Un plat duo, riche et réconfortant.",
     price: 13.9,
-    image: photo("photo-1574484284002-952d92469875"),
+    image: photo("photo-1482049016688-2d3e1b311543"),
     category: "duo",
     tags: ["gourmand", "maison", "complet"],
     calories: 640,
@@ -1187,7 +1187,7 @@ const drafts: Draft[] = [
     shortDescription: "Fèves de soja, sésame",
     description: "Edamame tièdes, fleur de sel et sésame. L’accompagnement vif des plats asiatiques.",
     price: 2.9,
-    image: photo("photo-1564834724105-918b73c1f01e"),
+    image: photo("photo-1588166524941-3bf61a9c41db"),
     category: "leger",
     tags: ["vege", "express", "proteine"],
     calories: 140,
@@ -1216,7 +1216,7 @@ const drafts: Draft[] = [
 export const products: Product[] = drafts.map(createProduct);
 
 export const BANNER_IMAGES = {
-  box: photo("photo-1498837162238-504159c7b62c"),
+  box: photo("photo-1490645935967-10de6ba17061"),
   delivery: photo("photo-1542838132-92c53300491e"),
   referral: photo("photo-1513885535751-8b9238bd345a"),
   kitchen: photo("photo-1556910103-1c02745aae4d"),
