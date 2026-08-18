@@ -5,6 +5,7 @@ import {
   ChefHat,
   LayoutDashboard,
   Package,
+  Percent,
   Settings,
   ShoppingBag,
   Tag,
@@ -27,6 +28,7 @@ export const ADMIN_NAV: Array<{
   { href: "/admin/customers", label: "Clients", icon: Users, permission: "customers.read" },
   { href: "/admin/deliveries", label: "Livraisons", icon: Bike, permission: "deliveries.read" },
   { href: "/admin/promotions", label: "Promotions", icon: Tag, permission: "promotions.read" },
+  { href: "/admin/profitability", label: "Marges & Rentabilité", icon: Percent, permission: "profitability" },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3, permission: "analytics" },
   { href: "/admin/settings", label: "Paramètres", icon: Settings, permission: "settings" },
 ];

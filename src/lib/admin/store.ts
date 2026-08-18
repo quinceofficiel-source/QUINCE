@@ -1,6 +1,14 @@
 import { createInitialState } from "@/lib/admin/seed";
 import { publishLiveOrder } from "@/lib/admin/live";
 import { readPersistedState, storeFileMtime, writePersistedState } from "@/lib/admin/persist";
+import { seedProductCostCard, seedProfitability } from "@/lib/admin/profitability-seed";
+import {
+  computeDishBreakdown,
+  computeOrderSnapshot,
+  defaultSettings,
+  type ProductCostCard,
+  type ProfitabilitySettings,
+} from "@/lib/admin/profitability";
 import type {
   AdminLog,
   AdminNotification,
@@ -13,7 +21,7 @@ import type {
   StaffUser,
 } from "@/lib/admin/types";
 
-const globalForStore = globalThis as typeof globalThis & { __quinceAdminStoreV2?: AdminStore };
+const globalForStore = globalThis as typeof globalThis & { __quinceAdminStoreV3?: AdminStore };
 
 class AdminStore {
   private state: AdminState;
@@ -22,7 +30,8 @@ class AdminStore {
   constructor() {
     const persisted = readPersistedState();
     this.state = persisted ?? createInitialState();
-    if (!persisted) this.persist();
+    const patched = this.ensureProfitability();
+    if (!persisted || patched) this.persist();
     else this.diskMtime = storeFileMtime();
   }
 
@@ -33,11 +42,49 @@ class AdminStore {
     if (!next) return;
     this.state = next;
     this.diskMtime = mtime;
+    if (this.ensureProfitability()) this.persist();
   }
 
   private persist() {
     writePersistedState(this.state);
     this.diskMtime = storeFileMtime() || Date.now();
+  }
+
+  private ensureProfitability() {
+    let changed = false;
+    if (!this.state.profitability) {
+      this.state.profitability = seedProfitability(this.state.products);
+      return true;
+    }
+    const known = new Set(this.state.profitability.cards.map((card) => card.productId));
+    this.state.products.forEach((product, index) => {
+      if (!known.has(product.id)) {
+        this.state.profitability.cards.push(seedProductCostCard(product, index));
+        changed = true;
+      }
+    });
+    if (!this.state.profitability.settings) {
+      this.state.profitability.settings = defaultSettings();
+      changed = true;
+    } else {
+      const merged: ProfitabilitySettings = {
+        ...defaultSettings(),
+        ...this.state.profitability.settings,
+        boxDiscountPercent: {
+          ...defaultSettings().boxDiscountPercent,
+          ...this.state.profitability.settings.boxDiscountPercent,
+        },
+      };
+      if (JSON.stringify(merged) !== JSON.stringify(this.state.profitability.settings)) {
+        this.state.profitability.settings = merged;
+        changed = true;
+      }
+    }
+    if (!this.state.profitability.history) {
+      this.state.profitability.history = [];
+      changed = true;
+    }
+    return changed;
   }
 
   snapshot(): AdminState {
@@ -149,6 +196,10 @@ class AdminStore {
     if (index >= 0) this.state.products[index] = input;
     else this.state.products.unshift(input);
     this.log(actor, isNew ? "Création plat" : "Modification plat", "product", input.id);
+    this.ensureProfitability();
+    if (!this.state.profitability.cards.some((card) => card.productId === input.id)) {
+      this.state.profitability.cards.push(seedProductCostCard(input, this.state.products.length));
+    }
     this.persist();
     return structuredClone(input);
   }
@@ -230,6 +281,7 @@ class AdminStore {
     shipping: number;
     total: number;
   }) {
+    this.ensureProfitability();
     const existing = this.state.orders.find((item) => item.id === input.id);
     if (existing) return structuredClone(existing);
 
@@ -279,6 +331,14 @@ class AdminStore {
       internalNotes: [],
       history: [{ status: "nouvelle", at: input.createdAt, by: "Boutique" }],
       promoCode: null,
+      costSnapshot: computeOrderSnapshot(
+        input.lines,
+        input.total,
+        (id) => this.costCard(id),
+        (id) => this.state.products.find((item) => item.id === id)?.price ?? 0,
+        this.state.profitability.settings,
+        input.createdAt,
+      ),
     };
     this.state.orders.unshift(order);
     const notification: AdminNotification = {
@@ -297,6 +357,97 @@ class AdminStore {
     this.persist();
     publishLiveOrder(notification);
     return structuredClone(order);
+  }
+
+  profitability() {
+    this.ensureProfitability();
+    return structuredClone(this.state.profitability);
+  }
+
+  costCard(productId: string) {
+    this.ensureProfitability();
+    return this.state.profitability.cards.find((card) => card.productId === productId) ?? null;
+  }
+
+  saveCostCard(card: ProductCostCard, actor: StaffUser) {
+    this.ensureProfitability();
+    const current = this.state.profitability.cards.find((item) => item.productId === card.productId);
+    current?.ingredients.forEach((prev) => {
+      const next = card.ingredients.find((item) => item.name.toLowerCase() === prev.name.toLowerCase());
+      if (!next) return;
+      if (Math.abs(next.purchasePrice - prev.purchasePrice) < 0.01) return;
+      this.state.profitability.history.push({
+        id: `hist-${Date.now()}-${Math.round(Math.random() * 999)}`,
+        name: next.name,
+        at: new Date().toISOString(),
+        price: next.purchasePrice,
+        qty: next.purchaseQty,
+        unit: next.purchaseUnit,
+      });
+      const rise = prev.purchasePrice > 0 ? ((next.purchasePrice - prev.purchasePrice) / prev.purchasePrice) * 100 : 0;
+      if (rise >= 10) {
+        this.state.notifications.unshift({
+          id: `ntf-cost-${Date.now()}`,
+          type: "cost",
+          title: "Hausse d’ingrédient",
+          body: `Le prix de ${next.name} a augmenté de ${Math.round(rise)} %.`,
+          href: `/admin/profitability/${card.productId}`,
+          at: new Date().toISOString(),
+          read: false,
+        });
+      }
+    });
+    const index = this.state.profitability.cards.findIndex((item) => item.productId === card.productId);
+    if (index >= 0) this.state.profitability.cards[index] = card;
+    else this.state.profitability.cards.push(card);
+    const product = this.state.products.find((item) => item.id === card.productId);
+    if (product) {
+      const breakdown = computeDishBreakdown(card, product.promoPrice ?? product.price, this.state.profitability.settings);
+      if (breakdown.marginEuro < 0) {
+        this.state.notifications.unshift({
+          id: `ntf-margin-${card.productId}-${Date.now()}`,
+          type: "margin",
+          title: "Plat vendu à perte",
+          body: `${product.name} est vendu en dessous de son coût.`,
+          href: `/admin/profitability/${product.id}`,
+          at: new Date().toISOString(),
+          read: false,
+        });
+      } else if (breakdown.marginPercent < this.state.profitability.settings.targetMarginPercent * 0.7) {
+        this.state.notifications.unshift({
+          id: `ntf-margin-${card.productId}-${Date.now()}`,
+          type: "margin",
+          title: "Marge insuffisante",
+          body: `Marge de ${product.name} passée à ${breakdown.marginPercent.toFixed(1).replace(".", ",")} %.`,
+          href: `/admin/profitability/${product.id}`,
+          at: new Date().toISOString(),
+          read: false,
+        });
+      }
+      const packShare = breakdown.sellPriceTtc > 0 ? (breakdown.packaging / breakdown.sellPriceTtc) * 100 : 0;
+      if (packShare >= 9) {
+        this.state.notifications.unshift({
+          id: `ntf-pack-${card.productId}-${Date.now()}`,
+          type: "cost",
+          title: "Packaging élevé",
+          body: `Le packaging représente ${packShare.toFixed(0)} % du prix de vente de ${product.name}.`,
+          href: `/admin/profitability/${product.id}`,
+          at: new Date().toISOString(),
+          read: false,
+        });
+      }
+    }
+    this.log(actor, "Mise à jour des coûts", "profitability", card.productId);
+    this.persist();
+    return structuredClone(card);
+  }
+
+  saveProfitSettings(settings: ProfitabilitySettings, actor: StaffUser) {
+    this.ensureProfitability();
+    this.state.profitability.settings = { ...defaultSettings(), ...settings, deliveryPerOrder: settings.deliveryPerOrder };
+    this.log(actor, "Objectifs de marge", "profitability", "settings");
+    this.persist();
+    return structuredClone(this.state.profitability.settings);
   }
 
   dashboard(): DashboardStats {
@@ -368,9 +519,9 @@ class AdminStore {
 }
 
 export function getAdminStore() {
-  if (!globalForStore.__quinceAdminStoreV2) {
-    globalForStore.__quinceAdminStoreV2 = new AdminStore();
+  if (!globalForStore.__quinceAdminStoreV3) {
+    globalForStore.__quinceAdminStoreV3 = new AdminStore();
   }
-  globalForStore.__quinceAdminStoreV2.syncFromDisk();
-  return globalForStore.__quinceAdminStoreV2;
+  globalForStore.__quinceAdminStoreV3.syncFromDisk();
+  return globalForStore.__quinceAdminStoreV3;
 }

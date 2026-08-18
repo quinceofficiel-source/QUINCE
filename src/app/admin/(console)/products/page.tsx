@@ -81,6 +81,11 @@ export default async function AdminProductsPage() {
                         <Link href={`/admin/products/${product.id}`} className="text-sm underline-offset-2 hover:underline">
                           Modifier
                         </Link>
+                        {can(actor.role, "profitability") ? (
+                          <Link href={`/admin/profitability/${product.id}`} className="text-sm underline-offset-2 hover:underline">
+                            Marge
+                          </Link>
+                        ) : null}
                         <form action={toggleProduct.bind(null, product.id, !product.active)}>
                           <button type="submit" className="text-sm text-muted">
                             {product.active ? "Désactiver" : "Activer"}

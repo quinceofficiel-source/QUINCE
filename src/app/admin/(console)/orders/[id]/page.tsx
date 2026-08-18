@@ -5,6 +5,7 @@ import { addOrderNote, assignOrderCourier, updateOrderStatus } from "@/lib/admin
 import { can } from "@/lib/admin/permissions";
 import { requireAdmin } from "@/lib/admin/dal";
 import { getAdminStore } from "@/lib/admin/store";
+import { orderEconomics } from "@/lib/admin/profit-report";
 import { ORDER_STATUS_LABELS, PAYMENT_LABELS, type OrderStatus } from "@/lib/admin/types";
 import { formatDateTime, formatPrice, formatTime } from "@/lib/format";
 
@@ -20,6 +21,15 @@ export default async function AdminOrderPage({ params }: { params: Promise<{ id:
   const writable = can(actor.role, "orders.write");
   const refundable = can(actor.role, "orders.refund");
   const canAssign = can(actor.role, "deliveries.write");
+  const canSeeMargin = can(actor.role, "profitability");
+  const economics = canSeeMargin
+    ? orderEconomics(
+        order,
+        (productId) => store.costCard(productId),
+        (productId) => store.product(productId)?.price ?? 0,
+        store.profitability().settings,
+      )
+    : null;
 
   return (
     <div className="space-y-6">
@@ -33,6 +43,28 @@ export default async function AdminOrderPage({ params }: { params: Promise<{ id:
         </div>
         <StatusBadge status={order.status} />
       </div>
+
+      {economics ? (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl bg-white p-4">
+            <p className="text-xs font-medium tracking-wide text-muted uppercase">CA commande</p>
+            <p className="mt-2 text-2xl font-semibold">{formatPrice(economics.revenue)}</p>
+          </div>
+          <div className="rounded-2xl bg-white p-4">
+            <p className="text-xs font-medium tracking-wide text-muted uppercase">Coût estimé</p>
+            <p className="mt-2 text-2xl font-semibold">{formatPrice(economics.cost)}</p>
+            {economics.estimated ? <p className="mt-1 text-xs text-muted">Estimé sur les coûts actuels</p> : <p className="mt-1 text-xs text-muted">Snapshot à la commande</p>}
+          </div>
+          <div className="rounded-2xl bg-white p-4">
+            <p className="text-xs font-medium tracking-wide text-muted uppercase">Marge</p>
+            <p className="mt-2 text-2xl font-semibold">{formatPrice(economics.margin)}</p>
+          </div>
+          <div className="rounded-2xl bg-white p-4">
+            <p className="text-xs font-medium tracking-wide text-muted uppercase">Marge</p>
+            <p className="mt-2 text-2xl font-semibold">{economics.marginPercent.toFixed(1).replace(".", ",")} %</p>
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="space-y-5">

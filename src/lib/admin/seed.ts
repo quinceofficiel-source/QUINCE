@@ -1,3 +1,5 @@
+import { computeOrderSnapshot } from "@/lib/admin/profitability";
+import { seedProfitability } from "@/lib/admin/profitability-seed";
 import { hashPassword } from "@/lib/admin/crypto";
 import type {
   AdminCustomer,
@@ -242,6 +244,19 @@ export function createInitialState(now = new Date()): AdminState {
     };
   });
 
+  const profitability = seedProfitability(adminProducts, now);
+  const cards = new Map(profitability.cards.map((card) => [card.productId, card]));
+  orders.forEach((order) => {
+    order.costSnapshot = computeOrderSnapshot(
+      order.lines,
+      order.total,
+      (id) => cards.get(id) ?? null,
+      (id) => adminProducts.find((item) => item.id === id)?.price ?? 0,
+      profitability.settings,
+      order.createdAt,
+    );
+  });
+
   return {
     staff,
     products: adminProducts,
@@ -249,6 +264,7 @@ export function createInitialState(now = new Date()): AdminState {
     customers,
     couriers,
     promotions,
+    profitability,
     logs: [
       {
         id: "log-1",

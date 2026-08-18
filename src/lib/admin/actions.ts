@@ -8,6 +8,7 @@ import { getAdminActor, requireAdmin } from "@/lib/admin/dal";
 import { createAdminSession, destroyAdminSession } from "@/lib/admin/session";
 import { getAdminStore } from "@/lib/admin/store";
 import type { AdminProduct, OrderStatus, Promotion, PromotionType } from "@/lib/admin/types";
+import { sanitizeCard, sanitizeSettings } from "@/lib/admin/profitability";
 import { saveProductUploads, uniqueImages } from "@/lib/admin/uploads";
 import { ingestCheckoutOrder } from "@/lib/admin/storefront";
 import type { CategoryId, CheckoutAddress } from "@/types/product";
@@ -207,6 +208,32 @@ function slugify(value: string) {
     .replace(/\p{Diacritic}/gu, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "") || `plat-${Date.now()}`;
+}
+
+export async function saveProductCostCard(formData: FormData) {
+  const actor = await requireAdmin("profitability");
+  const productId = String(formData.get("productId") ?? "");
+  if (!productId) throw new Error("Plat introuvable.");
+  let parsed: unknown = {};
+  try {
+    parsed = JSON.parse(String(formData.get("payload") ?? "{}"));
+  } catch {
+    throw new Error("Données de coûts invalides.");
+  }
+  getAdminStore().saveCostCard(sanitizeCard(parsed, productId), actor);
+  revalidatePath("/admin", "layout");
+}
+
+export async function saveProfitSettings(formData: FormData) {
+  const actor = await requireAdmin("profitability");
+  let parsed: unknown = {};
+  try {
+    parsed = JSON.parse(String(formData.get("payload") ?? "{}"));
+  } catch {
+    throw new Error("Paramètres invalides.");
+  }
+  getAdminStore().saveProfitSettings(sanitizeSettings(parsed), actor);
+  revalidatePath("/admin", "layout");
 }
 
 export async function submitStorefrontOrder(input: {

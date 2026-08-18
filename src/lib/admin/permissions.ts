@@ -17,6 +17,7 @@ const ALL: Permission[] = [
   "promotions.read",
   "promotions.write",
   "analytics",
+  "profitability",
   "settings",
   "staff.manage",
 ];

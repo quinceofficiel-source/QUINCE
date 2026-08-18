@@ -1,4 +1,10 @@
 import type { CategoryId, Product } from "@/types/product";
+import type {
+  IngredientPricePoint,
+  OrderCostSnapshot,
+  ProductCostCard,
+  ProfitabilitySettings,
+} from "@/lib/admin/profitability";
 
 export type StaffRole = "super_admin" | "admin" | "kitchen" | "delivery" | "support";
 
@@ -19,6 +25,7 @@ export type Permission =
   | "promotions.read"
   | "promotions.write"
   | "analytics"
+  | "profitability"
   | "settings"
   | "staff.manage";
 
@@ -100,6 +107,7 @@ export type AdminOrder = {
   internalNotes: string[];
   history: StatusEvent[];
   promoCode: string | null;
+  costSnapshot?: OrderCostSnapshot;
 };
 
 export type CustomerAddress = {
@@ -158,7 +166,7 @@ export type AdminLog = {
 
 export type AdminNotification = {
   id: string;
-  type: "order" | "payment" | "stock" | "late" | "support";
+  type: "order" | "payment" | "stock" | "late" | "support" | "margin" | "cost";
   title: string;
   body: string;
   href: string;
@@ -167,6 +175,12 @@ export type AdminNotification = {
   orderId?: string;
   customerName?: string;
   amount?: number;
+};
+
+export type ProfitabilityState = {
+  settings: ProfitabilitySettings;
+  cards: ProductCostCard[];
+  history: IngredientPricePoint[];
 };
 
 export type AdminState = {
@@ -178,6 +192,7 @@ export type AdminState = {
   promotions: Promotion[];
   logs: AdminLog[];
   notifications: AdminNotification[];
+  profitability: ProfitabilityState;
 };
 
 export type DashboardStats = {
