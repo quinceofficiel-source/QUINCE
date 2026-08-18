@@ -38,3 +38,13 @@ export const NAV_LINKS = [
   { href: "/comment-ca-marche", label: "Comment ça marche ?" },
   { href: "/a-propos", label: "À propos de nous" },
 ] as const;
+
+export const MENU_LINKS = [
+  { href: "/plats", label: "Nos plats" },
+  { href: "/composer-ma-box", label: "Composer ma box" },
+  { href: "/comment-ca-marche", label: "Comment ça marche ?" },
+  { href: "/a-propos", label: "À propos de Quince" },
+  { href: "/livraison", label: "Livraison" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
+] as const;

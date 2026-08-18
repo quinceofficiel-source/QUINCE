@@ -54,7 +54,7 @@ export function AddressModal({ open, onClose }: { open: boolean; onClose: () => 
       <button type="button" className="absolute inset-0 bg-ink/40" aria-label="Fermer" onClick={onClose} />
       <div className="absolute top-[12%] left-1/2 w-[min(92vw,560px)] -translate-x-1/2 rounded-[1.6rem] bg-white p-5 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-2xl">Modifier l’adresse</h2>
+          <h2 className="font-display text-2xl">{location ? "Modifier l’adresse" : "Choisir une adresse"}</h2>
           <button type="button" onClick={onClose} className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-cream" aria-label="Fermer">
             <X className="h-5 w-5" />
           </button>

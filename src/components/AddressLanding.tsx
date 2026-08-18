@@ -48,7 +48,7 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-white">
       <header className="absolute inset-x-0 top-0 z-20">
         <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Logo />
@@ -58,14 +58,9 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
                 Bonjour, {account.name}
               </Link>
             ) : (
-              <>
-                <Link href="/compte?mode=connexion" className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm">
-                  Connexion
-                </Link>
-                <Link href="/compte?mode=inscription" className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-white">
-                  Inscription
-                </Link>
-              </>
+              <Link href="/compte?mode=connexion" className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm">
+                Connexion
+              </Link>
             )}
           </div>
         </div>

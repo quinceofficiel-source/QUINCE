@@ -7,6 +7,7 @@ const columns = [
     title: "Quince",
     links: [
       { href: "/notre-histoire", label: "Notre histoire" },
+      { href: "/a-propos", label: "À propos de Quince" },
       { href: "/nos-cuisines", label: "Nos cuisines" },
       { href: "/nos-engagements", label: "Nos engagements" },
     ],
@@ -16,6 +17,7 @@ const columns = [
     links: [
       { href: "/plats", label: "Nos plats" },
       { href: "/composer-ma-box", label: "Composer ma box" },
+      { href: "/comment-ca-marche", label: "Comment ça marche ?" },
       { href: "/livraison", label: "Livraison" },
     ],
   },

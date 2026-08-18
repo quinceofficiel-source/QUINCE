@@ -67,7 +67,7 @@ export function MealBoxBuilder() {
         ))}
       </div>
 
-      <div className="sticky top-[76px] z-20 mt-8 rounded-2xl border border-line bg-cream/95 p-4 backdrop-blur-md">
+      <div className="sticky top-[80px] z-20 mt-8 rounded-2xl border border-line bg-white/95 p-4 backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="font-semibold">

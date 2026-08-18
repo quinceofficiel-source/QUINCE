@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { CategoryCarousel } from "@/components/CategoryCarousel";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { ProductGrid } from "@/components/ProductGrid";
 import { products } from "@/data/products";
@@ -31,9 +30,6 @@ export function CatalogView({ title = "Nos plats", subtitle }: { title?: string;
     <div className="pb-16">
       <h1 className="font-display text-3xl tracking-tight sm:text-5xl">{title}</h1>
       {subtitle ? <p className="mt-3 max-w-2xl text-muted">{subtitle}</p> : null}
-      <div className="mt-8">
-        <CategoryCarousel />
-      </div>
       <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
         <FilterSidebar />
         <div>

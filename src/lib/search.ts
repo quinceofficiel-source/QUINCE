@@ -1,4 +1,4 @@
-import { CATEGORIES } from "@/data/categories";
+import { CATEGORIES, CUISINES } from "@/data/categories";
 import { products } from "@/data/products";
 import type { CategoryId, Cuisine, Product } from "@/types/product";
 
@@ -22,7 +22,10 @@ export function searchProducts(query: string, list: Product[] = products): Produ
         product.description,
         product.shortDescription,
         product.category,
+        getCategoryLabel(product.category),
         product.cuisine ?? "",
+        CUISINES.find((item) => item.id === product.cuisine)?.label ?? "",
+        product.isVegetarian ? "vege vegetarien vegetarienne" : "",
         ...product.tags,
         ...product.ingredients,
       ].join(" "),

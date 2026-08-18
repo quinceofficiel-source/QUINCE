@@ -24,7 +24,7 @@ export function CartDrawer() {
       />
       <aside
         className={cn(
-          "absolute top-0 right-0 flex h-full w-full max-w-[420px] flex-col bg-cream shadow-2xl transition duration-300",
+          "absolute top-0 right-0 flex h-full w-full max-w-[420px] flex-col bg-white shadow-2xl transition duration-300",
           isOpen ? "translate-x-0" : "translate-x-full",
         )}
         aria-hidden={!isOpen}
@@ -34,7 +34,7 @@ export function CartDrawer() {
             <h2 className="font-display text-2xl">Votre panier</h2>
             <p className="text-sm text-muted">{plural(lines.reduce((n, l) => n + l.quantity, 0), "plat", "plats")}</p>
           </div>
-          <button type="button" onClick={closeCart} className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white" aria-label="Fermer">
+          <button type="button" onClick={closeCart} className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-cream" aria-label="Fermer">
             <X className="h-5 w-5" />
           </button>
         </div>

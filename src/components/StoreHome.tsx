@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-import { CategoryCarousel } from "@/components/CategoryCarousel";
 import { Container } from "@/components/Container";
 import { Hero } from "@/components/Hero";
 import { MoodCards } from "@/components/MoodCards";
@@ -14,17 +12,12 @@ export function StoreHome() {
   return (
     <>
       <Hero />
-      <Container className="pt-6 pb-8 sm:pt-8">
-        <Suspense>
-          <CategoryCarousel />
-        </Suspense>
-      </Container>
       <ProductCarousel title="Les plats les plus aimés" href="/plats?populaires=1" products={getPopular()} />
       <Container className="grid gap-5 pb-6 lg:grid-cols-3">
         <PromoBanner
           tone="sage"
           title="Composez votre semaine"
-          text="Choisissez vos plats préférés et créez votre box sur-mesure."
+          text="Choisissez vos plats préférés et créez votre box sur mesure."
           cta="Composer ma box"
           href="/composer-ma-box"
           image={BANNER_IMAGES.box}

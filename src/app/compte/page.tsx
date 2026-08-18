@@ -10,10 +10,22 @@ import { cn } from "@/lib/cn";
 
 type Account = { name: string; email: string };
 
+function safeNext(value: string | null) {
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.startsWith("/admin")) return "/";
+  return value;
+}
+
+function compteHref(mode: "connexion" | "inscription", nextPath: string) {
+  const params = new URLSearchParams({ mode });
+  if (nextPath && nextPath !== "/") params.set("next", nextPath);
+  return `/compte?${params.toString()}`;
+}
+
 export default function AccountPage() {
   const router = useRouter();
   const params = useSearchParams();
-  const requested = params.get("mode") === "connexion" ? "connexion" : "inscription";
+  const requested = params.get("mode") === "inscription" ? "inscription" : "connexion";
+  const nextPath = safeNext(params.get("next"));
   const [account, setAccount] = useStoredJson<Account | null>(STORAGE_KEYS.account, null);
   const mode = requested;
   const [name, setName] = useState("");
@@ -47,14 +59,14 @@ export default function AccountPage() {
         <div className="flex rounded-full bg-cream p-1 text-sm font-medium">
           <button
             type="button"
-            onClick={() => router.replace("/compte?mode=connexion")}
+            onClick={() => router.replace(compteHref("connexion", nextPath))}
             className={cn("flex-1 rounded-full py-2", mode === "connexion" && "bg-ink text-white")}
           >
             Connexion
           </button>
           <button
             type="button"
-            onClick={() => router.replace("/compte?mode=inscription")}
+            onClick={() => router.replace(compteHref("inscription", nextPath))}
             className={cn("flex-1 rounded-full py-2", mode === "inscription" && "bg-ink text-white")}
           >
             Inscription
@@ -73,7 +85,7 @@ export default function AccountPage() {
                 return;
               }
               setAccount({ name: name.trim(), email });
-              router.push("/");
+              router.push(nextPath);
               return;
             }
             const stored = window.localStorage.getItem(STORAGE_KEYS.account);
@@ -84,11 +96,11 @@ export default function AccountPage() {
                 return;
               }
               setAccount(existing);
-              router.push("/");
+              router.push(nextPath);
               return;
             }
             setAccount({ name: email.split("@")[0] || "Client", email });
-            router.push("/");
+            router.push(nextPath);
           }}
         >
           {mode === "inscription" ? (
