@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import { StoreChrome } from "@/components/StoreChrome";
 import { Providers } from "@/context/Providers";
+import { getDeliveryLocation } from "@/lib/delivery";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -26,12 +27,13 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const address = await getDeliveryLocation();
   return (
     <html lang="fr" className={`${montserrat.variable} ${montserrat.className} h-full overflow-x-clip antialiased`}>
       <body className="min-h-full overflow-x-clip bg-cream font-sans text-ink">
         <Providers>
-          <StoreChrome>{children}</StoreChrome>
+          <StoreChrome address={address}>{children}</StoreChrome>
         </Providers>
       </body>
     </html>

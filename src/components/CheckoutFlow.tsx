@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { getLineUnitPrice, useCart } from "@/context/CartContext";
+import { useDelivery } from "@/context/DeliveryContext";
 import { DELIVERY_SLOTS } from "@/data/slots";
 import { getProductById } from "@/data/products";
 import { formatPrice } from "@/lib/format";
@@ -29,10 +30,21 @@ const steps = ["Panier", "Livraison", "Paiement", "Confirmation"];
 export function CheckoutFlow() {
   const router = useRouter();
   const { lines, subtotal, shipping, total, setQuantity, clearCart } = useCart();
+  const { location } = useDelivery();
   const [step, setStep] = useState(0);
   const [address, setAddress] = useState<CheckoutAddress>(emptyAddress);
   const [slotId, setSlotId] = useState(DELIVERY_SLOTS[2].id);
   const [paying, setPaying] = useState(false);
+
+  useEffect(() => {
+    if (!location) return;
+    setAddress((current) => ({
+      ...current,
+      street: current.street || location.street,
+      zip: current.zip || location.zip,
+      city: current.city || location.city,
+    }));
+  }, [location]);
 
   const slot = useMemo(() => DELIVERY_SLOTS.find((item) => item.id === slotId)!, [slotId]);
 

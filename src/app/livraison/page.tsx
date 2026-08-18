@@ -11,12 +11,12 @@ export default function DeliveryPage() {
         <Image src={BANNER_IMAGES.delivery} alt="Sac Quince rempli de produits frais" fill className="object-cover" />
       </div>
       <p>
-        Nous livrons dans notre zone, en créneaux de deux heures, dans une box isolée. Les plats restent au froid jusqu’à
-        votre porte.
+        Nous livrons à Paris et en petite couronne (Boulogne, Neuilly, Levallois, Montreuil, Vincennes, Saint-Denis…).
+        Entrez votre adresse sur la page d’accueil pour vérifier la disponibilité.
       </p>
       <p>
-        La livraison est offerte dès 60 € d’achat. En dessous, une participation de 5,90 € s’applique. Sans abonnement,
-        sans engagement.
+        Les plats partent dans une box isolée, en créneaux de deux heures. La livraison est offerte dès 60 € d’achat. En
+        dessous, une participation de 5,90 € s’applique. Sans abonnement, sans engagement.
       </p>
     </Editorial>
   );
