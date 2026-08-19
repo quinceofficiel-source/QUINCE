@@ -8,29 +8,45 @@ import { cn } from "@/lib/cn";
 export function AddressSearch({
   onSelect,
   autoFocus,
+  selected,
   size = "lg",
   placeholder = "Saisissez votre adresse",
   submitLabel = "Chercher",
 }: {
   onSelect: (suggestion: BanSuggestion) => void;
   autoFocus?: boolean;
+  selected?: BanSuggestion | null;
   size?: "lg" | "md";
   placeholder?: string;
   submitLabel?: string;
 }) {
   const listId = useId();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(selected?.label ?? "");
   const [suggestions, setSuggestions] = useState<BanSuggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [error, setError] = useState("");
   const boxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (selected) {
+      setQuery(selected.label);
+      setSuggestions([]);
+      setOpen(false);
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus();
+  }, [autoFocus]);
 
   useEffect(() => {
     const q = query.trim();
-    if (q.length < 3) {
+    if (q.length < 3 || (selected && q === selected.label)) {
       setSuggestions([]);
+      setOpen(false);
       return;
     }
     const timer = window.setTimeout(async () => {
@@ -41,7 +57,7 @@ export function AddressSearch({
       setLoading(false);
     }, 220);
     return () => window.clearTimeout(timer);
-  }, [query]);
+  }, [query, selected]);
 
   useEffect(() => {
     function close(event: MouseEvent) {
@@ -95,6 +111,7 @@ export function AddressSearch({
         >
           <MapPin className="ml-4 h-5 w-5 shrink-0 text-ink/50" />
           <input
+            ref={inputRef}
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);

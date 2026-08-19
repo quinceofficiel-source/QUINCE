@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Box, Clock, Truck, UtensilsCrossed } from "lucide-react";
 import { AddressSearch } from "@/components/AddressSearch";
+import { LocationPromptModal } from "@/components/LocationPromptModal";
 import { saveDeliveryLocation } from "@/lib/delivery-actions";
 import { coverageFor, SERVED_CITIES } from "@/lib/delivery-zones";
 import { useDelivery } from "@/context/DeliveryContext";
@@ -22,6 +23,7 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
   const { setLocation } = useDelivery();
   const [account] = useStoredJson<Account | null>(STORAGE_KEYS.account, null);
   const [picked, setPicked] = useState<BanSuggestion | null>(null);
+  const [locationPromptOpen, setLocationPromptOpen] = useState(true);
   const [busy, setBusy] = useState(false);
   const [waitlist, setWaitlist] = useState("");
   const [waited, setWaited] = useState(false);
@@ -54,13 +56,24 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
           <Logo variant="landing" />
           <div className="flex items-center gap-2">
             {account ? (
-              <Link href="/compte" className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm">
+              <Link href="/compte" className="inline-flex h-10 items-center rounded-full bg-white px-4 text-sm font-medium text-ink shadow-sm">
                 Bonjour, {account.name}
               </Link>
             ) : (
-              <Link href="/compte?mode=connexion" className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm">
-                Connexion
-              </Link>
+              <>
+                <Link
+                  href="/compte?mode=connexion"
+                  className="inline-flex h-10 items-center rounded-full bg-white px-4 text-sm font-medium text-ink shadow-sm"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  href="/compte?mode=inscription"
+                  className="inline-flex h-10 items-center rounded-full bg-ink px-4 text-sm font-medium text-white hover:bg-neutral-800"
+                >
+                  Inscription
+                </Link>
+              </>
             )}
           </div>
         </div>
@@ -98,7 +111,11 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
             </p>
             <div className="mt-6 rounded-[1.6rem] bg-white p-4 shadow-[0_24px_60px_-32px_rgba(17,17,17,0.35)] sm:p-5">
               <p className="mb-3 text-sm font-medium">Entrez une adresse pour découvrir vos options</p>
-              <AddressSearch autoFocus onSelect={setPicked} />
+              <AddressSearch
+                autoFocus={!locationPromptOpen}
+                selected={picked}
+                onSelect={setPicked}
+              />
               {picked && coverage ? (
                 <div className="mt-5 border-t border-line pt-4">
                   {coverage.status === "available" ? (
@@ -198,6 +215,12 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
           ))}
         </div>
       </section>
+
+      <LocationPromptModal
+        open={locationPromptOpen}
+        onClose={() => setLocationPromptOpen(false)}
+        onLocated={setPicked}
+      />
     </div>
   );
 }
