@@ -78,12 +78,12 @@ export function CategoryCarousel() {
             <Link
               key={category.id}
               href={withServingFormat(category.href, format)}
-              className="group flex w-[76px] shrink-0 flex-col items-center gap-1.5 sm:w-[84px]"
+              className="group flex w-[80px] shrink-0 flex-col items-center gap-1.5 sm:w-[88px]"
             >
               <CategoryIcon
                 id={category.id}
                 className={cn(
-                  "h-14 w-14 transition duration-200 sm:h-16 sm:w-16",
+                  "h-[68px] w-[68px] transition duration-200 sm:h-[76px] sm:w-[76px]",
                   selected ? "scale-105" : "group-hover:scale-105",
                 )}
               />
