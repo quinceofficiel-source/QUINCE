@@ -11,6 +11,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { getCategoryLabel } from "@/lib/search";
 import { formatNumber, formatPrice, formatRating } from "@/lib/format";
 import { getExtras, getRelated } from "@/data/products";
+import { isSharing, pricePerPerson, productPeopleLabel } from "@/lib/serving";
 import type { Product } from "@/types/product";
 
 export function ProductDetail({ product }: { product: Product }) {
@@ -21,6 +22,9 @@ export function ProductDetail({ product }: { product: Product }) {
   );
   const extras = getExtras(product);
   const related = getRelated(product);
+  const sharing = isSharing(product);
+  const people = productPeopleLabel(product);
+  const perPerson = pricePerPerson(product);
 
   return (
     <div className="pb-16">
@@ -32,10 +36,13 @@ export function ProductDetail({ product }: { product: Product }) {
           </div>
           <div>
             <span className="rounded-full bg-cream-dark px-3 py-1 text-sm">
-              {product.category === "maison" ? "🏠 " : ""}
-              {getCategoryLabel(product.category)}
+              {sharing ? "Repas à partager" : `${product.category === "maison" ? "🏠 " : ""}${getCategoryLabel(product.category)}`}
             </span>
             <h1 className="mt-4 font-display text-3xl tracking-tight sm:text-5xl">{product.name}</h1>
+            {people ? <p className="mt-2 text-base font-medium">{people}</p> : null}
+            {sharing && product.includedSides?.length ? (
+              <p className="mt-1 text-sm text-muted">Inclus : {product.includedSides.join(" · ")}</p>
+            ) : null}
             <p className="mt-3 flex items-center gap-2 text-sm">
               <Star className="h-4 w-4 fill-quince text-quince" />
               <span className="font-medium">{formatRating(product.rating)}</span>
@@ -70,7 +77,13 @@ export function ProductDetail({ product }: { product: Product }) {
               </fieldset>
             ) : null}
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-end gap-4">
+              {sharing ? (
+                <div>
+                  <p className="text-2xl font-semibold">{formatPrice(portion.price)}</p>
+                  {perPerson ? <p className="text-sm text-muted">soit {formatPrice(perPerson)} / pers.</p> : null}
+                </div>
+              ) : null}
               <AddToCartButton
                 product={product}
                 servings={portion.servings}

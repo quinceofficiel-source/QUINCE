@@ -3,12 +3,20 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CATEGORIES, CUISINES } from "@/data/categories";
 import { cn } from "@/lib/cn";
+import { parseServingFormat } from "@/lib/serving";
 
-const PRICE_OPTIONS = [
+const INDIVIDUAL_PRICE_OPTIONS = [
   { label: "Tous les prix", value: "" },
   { label: "Moins de 8 €", value: "8" },
   { label: "Moins de 10 €", value: "10" },
   { label: "Moins de 12 €", value: "12" },
+];
+
+const SHARING_PRICE_OPTIONS = [
+  { label: "Tous les prix", value: "" },
+  { label: "Moins de 40 €", value: "40" },
+  { label: "Moins de 50 €", value: "50" },
+  { label: "Moins de 60 €", value: "60" },
 ];
 
 const CALORIE_OPTIONS = [
@@ -43,6 +51,8 @@ export function FilterSidebar() {
   }
 
   const category = params.get("categorie") ?? "";
+  const sharing = parseServingFormat(params.get("format")) === "partage";
+  const priceOptions = sharing ? SHARING_PRICE_OPTIONS : INDIVIDUAL_PRICE_OPTIONS;
 
   return (
     <aside className="space-y-6 rounded-[1.5rem] bg-white p-5 lg:sticky lg:top-24">
@@ -74,7 +84,7 @@ export function FilterSidebar() {
           value={params.get("prix") ?? ""}
           onChange={(event) => setParam("prix", event.target.value)}
         >
-          {PRICE_OPTIONS.map((option) => (
+          {priceOptions.map((option) => (
             <option key={option.label} value={option.value}>
               {option.label}
             </option>

@@ -10,10 +10,7 @@ export default function PlatsPage() {
   return (
     <Container className="py-10">
       <Suspense>
-        <CatalogView
-          title="Nos plats"
-          subtitle="Des recettes généreuses, cuisinées chaque jour. Filtrez selon votre envie du moment."
-        />
+        <CatalogView />
       </Suspense>
     </Container>
   );

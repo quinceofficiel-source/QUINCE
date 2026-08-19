@@ -1,5 +1,7 @@
 export type ProductKind = "plat" | "accompagnement" | "dessert";
 
+export type ServingType = "individual" | "sharing";
+
 export type Cuisine = "france" | "italie" | "maghreb" | "afrique" | "asie" | "inde";
 
 export type CategoryId =
@@ -60,6 +62,10 @@ export type Product = {
   nutrition: Nutrition;
   extras: string[];
   related: string[];
+  servingType: ServingType;
+  servingsMin?: number;
+  servingsMax?: number;
+  includedSides?: string[];
 };
 
 export type CartLine = {

@@ -11,7 +11,8 @@ import type { AdminProduct, OrderStatus, Promotion, PromotionType } from "@/lib/
 import { sanitizeCard, sanitizeSettings } from "@/lib/admin/profitability";
 import { saveProductUploads, uniqueImages } from "@/lib/admin/uploads";
 import { ingestCheckoutOrder } from "@/lib/admin/storefront";
-import type { CategoryId, CheckoutAddress } from "@/types/product";
+import type { CategoryId, CheckoutAddress, ServingType } from "@/types/product";
+import { peopleLabel } from "@/lib/serving";
 
 export type AuthState = { error?: string; sent?: boolean } | undefined;
 
@@ -87,6 +88,10 @@ export async function saveProduct(formData: FormData) {
   const cover = images[0] || current?.image || "/hero-banner.jpg";
   const price = Number(formData.get("price"));
   const promo = String(formData.get("promoPrice") ?? "").trim();
+  const servingType: ServingType = formData.get("servingType") === "sharing" ? "sharing" : "individual";
+  const servingsMin = Number(formData.get("servingsMin") || 0) || undefined;
+  const servingsMax = Number(formData.get("servingsMax") || 0) || servingsMin;
+  const includedSides = splitList(formData.get("includedSides"));
   const product: AdminProduct = {
     id,
     slug: id,
@@ -104,7 +109,10 @@ export async function saveProduct(formData: FormData) {
     reviews: current?.reviews ?? 0,
     ingredients: splitList(formData.get("ingredients")),
     allergens: splitList(formData.get("allergens")),
-    portions: current?.portions ?? [{ servings: 1, price, label: "1 portion" }],
+    portions:
+      servingType === "sharing"
+        ? [{ servings: 1, price, label: peopleLabel(servingsMin ?? 4, servingsMax ?? servingsMin ?? 4) }]
+        : current?.portions ?? [{ servings: 1, price, label: "1 portion" }],
     isNew: formData.get("isNewFlag") === "on",
     isPopular: formData.get("isPopular") === "on",
     kind: current?.kind ?? "plat",
@@ -122,6 +130,10 @@ export async function saveProduct(formData: FormData) {
     },
     extras: current?.extras ?? [],
     related: current?.related ?? [],
+    servingType,
+    servingsMin: servingType === "sharing" ? servingsMin ?? 4 : undefined,
+    servingsMax: servingType === "sharing" ? servingsMax ?? servingsMin ?? 4 : undefined,
+    includedSides: servingType === "sharing" ? includedSides : undefined,
     promoPrice: promo ? Number(promo) : null,
     stock: Number(formData.get("stock") ?? current?.stock ?? 0),
     minStock: Number(formData.get("minStock") ?? current?.minStock ?? 8),

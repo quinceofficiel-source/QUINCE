@@ -49,6 +49,23 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
       <Field label="Prix">
         <input name="price" type="number" step="0.1" required defaultValue={product?.price} className={input} />
       </Field>
+      <Field label="Type de repas">
+        <select name="servingType" defaultValue={product?.servingType ?? "individual"} className={input}>
+          <option value="individual">Plat individuel</option>
+          <option value="sharing">Repas à partager</option>
+        </select>
+      </Field>
+      <Field label="Personnes (min)">
+        <input name="servingsMin" type="number" min={1} defaultValue={product?.servingsMin ?? ""} className={input} />
+      </Field>
+      <Field label="Personnes (max)">
+        <input name="servingsMax" type="number" min={1} defaultValue={product?.servingsMax ?? ""} className={input} />
+      </Field>
+      <div className="lg:col-span-2">
+        <Field label="Accompagnements inclus (repas à partager)">
+          <input name="includedSides" defaultValue={product?.includedSides?.join(", ") ?? ""} className={input} />
+        </Field>
+      </div>
       <Field label="Prix promotionnel">
         <input name="promoPrice" type="number" step="0.1" defaultValue={product?.promoPrice ?? ""} className={input} />
       </Field>

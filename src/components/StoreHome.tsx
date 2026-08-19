@@ -37,9 +37,9 @@ export function StoreHome() {
       <MoodCards />
       <ProductCarousel title="Nouveautés de la semaine" href="/plats?nouveautes=1" products={getNewDishes()} />
       <ProductCarousel
-        title="Pour toute la famille"
-        subtitle="Plats à partager, recettes réconfortantes et menus enfants."
-        href="/plats?categorie=famille"
+        title="Repas à partager"
+        subtitle="Grands plats à poser au centre de la table, pour toute la famille."
+        href="/plats?format=partage"
         products={getFamilyDishes()}
       />
       <WorldSection />

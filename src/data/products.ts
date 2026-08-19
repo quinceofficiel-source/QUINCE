@@ -1,4 +1,5 @@
-import type { PortionOption, Product, ProductKind } from "@/types/product";
+import type { PortionOption, Product, ProductKind, ServingType } from "@/types/product";
+import { peopleLabel } from "@/lib/serving";
 
 function photo(id: string) {
   return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1400&q=80`;
@@ -13,8 +14,9 @@ function portions(price: number): PortionOption[] {
   ];
 }
 
-type Draft = Omit<Product, "portions" | "nutrition" | "kind"> & {
+type Draft = Omit<Product, "portions" | "nutrition" | "kind" | "servingType"> & {
   kind?: ProductKind;
+  servingType?: ServingType;
   fat: number;
   carbs: number;
   fiber: number;
@@ -22,11 +24,22 @@ type Draft = Omit<Product, "portions" | "nutrition" | "kind"> & {
 };
 
 function createProduct(draft: Draft): Product {
-  const { fat, carbs, fiber, salt, kind = "plat", ...rest } = draft;
+  const { fat, carbs, fiber, salt, kind = "plat", servingType = "individual", ...rest } = draft;
+  const sharing = servingType === "sharing";
+  const servingsMin = sharing ? draft.servingsMin ?? 4 : undefined;
+  const servingsMax = sharing ? draft.servingsMax ?? servingsMin : undefined;
   return {
     ...rest,
     kind,
-    portions: kind === "plat" ? portions(draft.price) : [{ servings: 1, price: draft.price, label: "1 portion" }],
+    servingType,
+    servingsMin,
+    servingsMax,
+    includedSides: sharing ? draft.includedSides ?? [] : undefined,
+    portions: sharing
+      ? [{ servings: 1, price: draft.price, label: peopleLabel(servingsMin, servingsMax) }]
+      : kind === "plat"
+        ? portions(draft.price)
+        : [{ servings: 1, price: draft.price, label: "1 portion" }],
     nutrition: {
       calories: draft.calories,
       protein: draft.protein,
@@ -935,6 +948,190 @@ const drafts: Draft[] = [
     related: ["poulet-creme-moutarde", "steak-hache-puree", "hachis-parmentier"],
   },
   {
+    id: "gigot-agneau-familial",
+    slug: "gigot-agneau-familial",
+    name: "Gigot d’agneau & pommes de terre",
+    shortDescription: "Gigot rôti, pommes de terre, légumes de saison",
+    description:
+      "Un gigot d’agneau cuit lentement, pommes de terre rôties et légumes de saison. À poser au centre de la table, comme un dimanche en famille.",
+    price: 59.9,
+    image: photo("photo-1529692236671-f1f6cf9683ba"),
+    category: "famille",
+    tags: ["famille", "gourmand", "maison", "complet"],
+    calories: 620,
+    protein: 42,
+    fat: 28,
+    carbs: 42,
+    fiber: 6,
+    salt: 1.8,
+    rating: 4.9,
+    reviews: 48,
+    ingredients: ["Gigot d’agneau", "Pommes de terre", "Carottes", "Oignon", "Ail", "Romarin", "Thym", "Huile d’olive"],
+    allergens: [],
+    isNew: true,
+    isPopular: true,
+    cuisine: "france",
+    isVegetarian: false,
+    isComplete: true,
+    servingType: "sharing",
+    servingsMin: 4,
+    servingsMax: 6,
+    includedSides: ["Pommes de terre rôties", "Légumes de saison"],
+    reheating: "25 min au four à 160 °C, à couvert. Laisser reposer 5 min avant de servir.",
+    conservation: "À conserver au réfrigérateur entre 0 et 4 °C, 3 jours après livraison.",
+    extras: ["salade-verte", "pain-maison", "tarte-citron"],
+    related: ["poulet-roti-familial", "couscous-familial", "tajine-familial"],
+  },
+  {
+    id: "poulet-roti-familial",
+    slug: "poulet-roti-familial",
+    name: "Poulet rôti & gratin dauphinois",
+    shortDescription: "Poulet entier, gratin, légumes",
+    description:
+      "Poulet rôti entier, gratin dauphinois crémeux et légumes fondants. Un vrai repas du dimanche, prêt à partager.",
+    price: 44.9,
+    image: photo("photo-1476224203421-9ac39bcb3327"),
+    category: "famille",
+    tags: ["famille", "maison", "complet", "gourmand"],
+    calories: 580,
+    protein: 38,
+    fat: 26,
+    carbs: 40,
+    fiber: 5,
+    salt: 1.6,
+    rating: 4.8,
+    reviews: 62,
+    ingredients: [
+      "Poulet entier",
+      "Pommes de terre",
+      "Crème fraîche",
+      "Lait",
+      "Ail",
+      "Carottes",
+      "Haricots verts",
+      "Thym",
+    ],
+    allergens: ["Lait"],
+    isNew: true,
+    isPopular: true,
+    cuisine: "france",
+    isVegetarian: false,
+    isComplete: true,
+    servingType: "sharing",
+    servingsMin: 4,
+    servingsMax: 4,
+    includedSides: ["Gratin dauphinois", "Légumes"],
+    reheating: "20 min au four à 160 °C pour dorer le poulet et réchauffer le gratin.",
+    conservation: "À conserver au réfrigérateur entre 0 et 4 °C, 3 jours après livraison.",
+    extras: ["salade-verte", "pain-maison", "mousse-chocolat"],
+    related: ["gigot-agneau-familial", "lasagnes-familiales", "poulet-roti-legumes"],
+  },
+  {
+    id: "tajine-familial",
+    slug: "tajine-familial",
+    name: "Tajine familial",
+    shortDescription: "Poulet, citron confit, olives, semoule",
+    description:
+      "Grand tajine de poulet au citron confit et aux olives, semoule parfumée. Un plat généreux à partager, aux parfums du Maghreb.",
+    price: 49.9,
+    image: photo("photo-1414235077428-338989a2e8c0"),
+    category: "famille",
+    tags: ["famille", "decouverte", "gourmand", "complet"],
+    calories: 560,
+    protein: 36,
+    fat: 22,
+    carbs: 48,
+    fiber: 7,
+    salt: 1.9,
+    rating: 4.8,
+    reviews: 41,
+    ingredients: ["Poulet", "Citron confit", "Olives", "Oignon", "Safran", "Coriandre", "Semoule", "Huile d’olive"],
+    allergens: ["Gluten"],
+    isNew: false,
+    isPopular: true,
+    cuisine: "maghreb",
+    isVegetarian: false,
+    isComplete: true,
+    servingType: "sharing",
+    servingsMin: 4,
+    servingsMax: 6,
+    includedSides: ["Semoule parfumée"],
+    reheating: "15 min à feu doux ou 18 min au four à 160 °C, à couvert.",
+    conservation: "À conserver au réfrigérateur entre 0 et 4 °C, 3 jours après livraison.",
+    extras: ["pain-maison", "cheesecake"],
+    related: ["couscous-familial", "tajine-poulet-citron", "gigot-agneau-familial"],
+  },
+  {
+    id: "lasagnes-familiales",
+    slug: "lasagnes-familiales",
+    name: "Lasagnes familiales",
+    shortDescription: "Bolognaise, béchamel, gratin généreux",
+    description:
+      "Grand plat de lasagnes à la bolognaise, béchamel et fromage gratiné. À découper au centre de la table.",
+    price: 34.9,
+    image: photo("photo-1574894709920-11b28e7367e3"),
+    category: "famille",
+    tags: ["famille", "maison", "gourmand", "complet"],
+    calories: 610,
+    protein: 28,
+    fat: 28,
+    carbs: 58,
+    fiber: 4,
+    salt: 1.7,
+    rating: 4.7,
+    reviews: 73,
+    ingredients: ["Pâtes à lasagnes", "Bœuf haché", "Tomates", "Béchamel", "Parmesan", "Mozzarella", "Oignon", "Ail"],
+    allergens: ["Gluten", "Lait", "Œuf"],
+    isNew: false,
+    isPopular: true,
+    cuisine: "italie",
+    isVegetarian: false,
+    isComplete: true,
+    servingType: "sharing",
+    servingsMin: 4,
+    servingsMax: 4,
+    includedSides: ["Salade verte"],
+    reheating: "20 min au four à 170 °C, jusqu’à ce que le gratin dore.",
+    conservation: "À conserver au réfrigérateur entre 0 et 4 °C, 3 jours après livraison.",
+    extras: ["salade-verte", "tiramisu"],
+    related: ["lasagnes-maison", "poulet-roti-familial", "couscous-familial"],
+  },
+  {
+    id: "couscous-familial",
+    slug: "couscous-familial",
+    name: "Couscous familial",
+    shortDescription: "Agneau, poulet, merguez, semoule, légumes",
+    description:
+      "Couscous royal pour six : semoule, légumes fondants, agneau, poulet et merguez. Le grand plat à partager.",
+    price: 54.9,
+    image: photo("photo-1504674900247-0877df9cc836"),
+    category: "famille",
+    tags: ["famille", "decouverte", "gourmand", "complet"],
+    calories: 640,
+    protein: 38,
+    fat: 24,
+    carbs: 62,
+    fiber: 8,
+    salt: 2.1,
+    rating: 4.9,
+    reviews: 55,
+    ingredients: ["Semoule", "Agneau", "Poulet", "Merguez", "Pois chiches", "Carottes", "Courgettes", "Navets", "Ras el-hanout"],
+    allergens: ["Gluten"],
+    isNew: false,
+    isPopular: true,
+    cuisine: "maghreb",
+    isVegetarian: false,
+    isComplete: true,
+    servingType: "sharing",
+    servingsMin: 6,
+    servingsMax: 6,
+    includedSides: ["Semoule", "Légumes du couscous"],
+    reheating: "15 min à feu doux, à couvert. Délayer la semoule avec un peu de bouillon.",
+    conservation: "À conserver au réfrigérateur entre 0 et 4 °C, 3 jours après livraison.",
+    extras: ["pain-maison", "tarte-citron"],
+    related: ["tajine-familial", "couscous-royal", "gigot-agneau-familial"],
+  },
+  {
     id: "mousse-chocolat",
     slug: "mousse-chocolat",
     name: "Mousse au chocolat",
@@ -1235,15 +1432,15 @@ export function getProductById(id: string) {
 }
 
 export function getMains() {
-  return products.filter((product) => product.kind === "plat");
+  return products.filter((product) => product.kind === "plat" && product.servingType === "individual");
 }
 
 export function getPopular() {
-  return products.filter((product) => product.isPopular && product.kind === "plat");
+  return products.filter((product) => product.isPopular && product.kind === "plat" && product.servingType === "individual");
 }
 
 export function getNewDishes() {
-  return products.filter((product) => product.isNew);
+  return products.filter((product) => product.isNew && product.servingType === "individual");
 }
 
 export function getDesserts() {
@@ -1251,19 +1448,23 @@ export function getDesserts() {
 }
 
 export function getByCuisine(cuisine: Product["cuisine"]) {
-  return products.filter((product) => product.cuisine === cuisine && product.kind === "plat");
+  return products.filter(
+    (product) => product.cuisine === cuisine && product.kind === "plat" && product.servingType === "individual",
+  );
 }
 
 export function getProteinRich() {
-  return products.filter((product) => product.kind === "plat" && product.protein >= 30);
+  return products.filter(
+    (product) => product.kind === "plat" && product.servingType === "individual" && product.protein >= 30,
+  );
 }
 
 export function getFamilyDishes() {
-  return products.filter(
-    (product) =>
-      product.kind === "plat" &&
-      (product.category === "famille" || product.category === "kids" || product.tags.includes("famille")),
-  );
+  return products.filter((product) => product.servingType === "sharing");
+}
+
+export function getSharingMeals() {
+  return getFamilyDishes();
 }
 
 export function getRelated(product: Product) {

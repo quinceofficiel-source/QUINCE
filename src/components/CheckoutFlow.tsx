@@ -9,6 +9,7 @@ import { useDelivery } from "@/context/DeliveryContext";
 import { DELIVERY_SLOTS } from "@/data/slots";
 import { getProductById } from "@/data/products";
 import { formatPrice } from "@/lib/format";
+import { cartLineLabel } from "@/lib/serving";
 import { STORAGE_KEYS, writeJson } from "@/lib/storage";
 import { LIVE_ORDER_CHANNEL } from "@/lib/admin/live-message";
 import type { CheckoutAddress, Order } from "@/types/product";
@@ -165,7 +166,7 @@ export function CheckoutFlow() {
                     <div>
                       <p className="font-medium">{product.name}</p>
                       <p className="text-sm text-muted">
-                        {line.servings} portion{line.servings > 1 ? "s" : ""} · {formatPrice(getLineUnitPrice(line))}
+                        {cartLineLabel(product, line.servings)} · {formatPrice(getLineUnitPrice(line))}
                       </p>
                     </div>
                     <QuantitySelector

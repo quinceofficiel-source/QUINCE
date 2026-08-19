@@ -9,6 +9,7 @@ import { getLineUnitPrice, useCart } from "@/context/CartContext";
 import { getProductById } from "@/data/products";
 import { cn } from "@/lib/cn";
 import { formatPrice, FREE_SHIPPING_THRESHOLD, plural } from "@/lib/format";
+import { cartLineLabel } from "@/lib/serving";
 
 export function CartDrawer() {
   const { lines, isOpen, closeCart, subtotal, shipping, total, remainingForFreeShipping, setQuantity, removeLine } =
@@ -75,7 +76,7 @@ export function CartDrawer() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{product.name}</p>
-                      <p className="text-xs text-muted">{line.servings} portion{line.servings > 1 ? "s" : ""}</p>
+                      <p className="text-xs text-muted">{cartLineLabel(product, line.servings)}</p>
                       <div className="mt-2 flex items-center justify-between gap-2">
                         <QuantitySelector
                           value={line.quantity}

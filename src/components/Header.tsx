@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Heart, MapPin, Menu, ShoppingBag, User, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { AddressModal } from "@/components/AddressModal";
 import { Logo } from "@/components/Logo";
 import { SearchBar } from "@/components/SearchBar";
+import { ServingFormatSwitch } from "@/components/ServingFormatSwitch";
 import { useCart } from "@/context/CartContext";
 import { useDelivery } from "@/context/DeliveryContext";
 import { MENU_LINKS } from "@/data/categories";
@@ -70,6 +71,12 @@ function HeaderBar() {
 
           <Logo className="min-w-0" />
 
+          <div className="ml-1 hidden min-w-0 lg:block">
+            <Suspense fallback={<div className="h-9 w-[280px] rounded-full bg-cream" />}>
+              <ServingFormatSwitch />
+            </Suspense>
+          </div>
+
           <button
             type="button"
             onClick={() => setAddressOpen(true)}
@@ -85,6 +92,12 @@ function HeaderBar() {
             <FavoritesLink account={account} iconOnly />
             <CartButton itemCount={itemCount} subtotal={subtotal} lastAddedId={lastAddedId} onClick={openCart} compact />
           </div>
+        </div>
+
+        <div className="lg:hidden">
+          <Suspense fallback={<div className="h-9 w-full rounded-full bg-cream" />}>
+            <ServingFormatSwitch variant="bar" />
+          </Suspense>
         </div>
 
         <button

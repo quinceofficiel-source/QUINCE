@@ -6,14 +6,24 @@ import { FilterSidebar } from "@/components/FilterSidebar";
 import { ProductGrid } from "@/components/ProductGrid";
 import { products } from "@/data/products";
 import { filterProducts } from "@/lib/search";
+import { parseServingFormat, servingTypeFromFormat } from "@/lib/serving";
 import type { CategoryId, Cuisine } from "@/types/product";
 
-export function CatalogView({ title = "Nos plats", subtitle }: { title?: string; subtitle?: string }) {
+export function CatalogView({ title, subtitle }: { title?: string; subtitle?: string }) {
   const params = useSearchParams();
+  const sharing = parseServingFormat(params.get("format")) === "partage";
+  const heading = title ?? (sharing ? "Repas à partager" : "Nos plats");
+  const lead =
+    subtitle ??
+    (sharing
+      ? "Grands plats à poser au centre de la table, pour 4 à 6 personnes."
+      : "Des recettes généreuses, cuisinées chaque jour. Filtrez selon votre envie du moment.");
 
   const filtered = useMemo(() => {
     const category = params.get("categorie") as CategoryId | null;
+    const format = parseServingFormat(params.get("format"));
     return filterProducts({
+      servingType: servingTypeFromFormat(format),
       category: category && category !== "nouveau" && category !== "favoris" ? category : undefined,
       cuisine: (params.get("cuisine") as Cuisine | null) || undefined,
       vegetarian: params.get("vege") === "1",
@@ -28,8 +38,8 @@ export function CatalogView({ title = "Nos plats", subtitle }: { title?: string;
 
   return (
     <div className="pb-16">
-      <h1 className="font-display text-3xl tracking-tight sm:text-5xl">{title}</h1>
-      {subtitle ? <p className="mt-3 max-w-2xl text-muted">{subtitle}</p> : null}
+      <h1 className="font-display text-3xl tracking-tight sm:text-5xl">{heading}</h1>
+      {lead ? <p className="mt-3 max-w-2xl text-muted">{lead}</p> : null}
       <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
         <FilterSidebar />
         <div>

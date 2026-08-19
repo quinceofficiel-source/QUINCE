@@ -7,6 +7,7 @@ import {
   getProductById,
   getProductBySlug,
   getProteinRich,
+  getSharingMeals,
   products,
 } from "@/data/products";
 import { filterProducts, searchProducts, type CatalogFilters } from "@/lib/search";
@@ -36,5 +37,6 @@ export const catalog = {
   news: getNewDishes,
   desserts: getDesserts,
   family: getFamilyDishes,
+  sharing: getSharingMeals,
   protein: getProteinRich,
 };

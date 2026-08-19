@@ -1,6 +1,6 @@
 import { CATEGORIES, CUISINES } from "@/data/categories";
 import { products } from "@/data/products";
-import type { CategoryId, Cuisine, Product } from "@/types/product";
+import type { CategoryId, Cuisine, Product, ServingType } from "@/types/product";
 
 function normalize(value: string) {
   return value
@@ -45,6 +45,7 @@ export type CatalogFilters = {
   maxCalories?: number;
   minProtein?: number;
   query?: string;
+  servingType?: ServingType;
 };
 
 export function filterProducts(filters: CatalogFilters, list: Product[] = products): Product[] {
@@ -52,6 +53,10 @@ export function filterProducts(filters: CatalogFilters, list: Product[] = produc
 
   if (filters.query) {
     result = searchProducts(filters.query, result);
+  }
+
+  if (filters.servingType) {
+    result = result.filter((product) => product.servingType === filters.servingType);
   }
 
   if (filters.category && filters.category !== "favoris" && filters.category !== "nouveau") {

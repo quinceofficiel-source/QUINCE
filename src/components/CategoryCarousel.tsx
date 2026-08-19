@@ -7,12 +7,14 @@ import { useEffect, useRef, useState } from "react";
 import { CategoryIcon } from "@/components/CategoryIcons";
 import { CATEGORIES } from "@/data/categories";
 import { cn } from "@/lib/cn";
+import { parseServingFormat, withServingFormat } from "@/lib/serving";
 
 export function CategoryCarousel() {
   const params = useSearchParams();
   const pathname = usePathname();
   const active = params.get("categorie");
   const isNew = params.get("nouveautes") === "1";
+  const format = parseServingFormat(params.get("format"));
   const scroller = useRef<HTMLDivElement>(null);
   const [left, setLeft] = useState(false);
   const [right, setRight] = useState(false);
@@ -75,7 +77,7 @@ export function CategoryCarousel() {
           return (
             <Link
               key={category.id}
-              href={category.href}
+              href={withServingFormat(category.href, format)}
               className="group flex w-[76px] shrink-0 flex-col items-center gap-1.5 sm:w-[84px]"
             >
               <CategoryIcon

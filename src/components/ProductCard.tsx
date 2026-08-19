@@ -7,11 +7,15 @@ import { AddToCartButton } from "@/components/AddToCartButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { getCategoryLabel } from "@/lib/search";
 import { formatNumber, formatPrice, formatRating } from "@/lib/format";
+import { isSharing, pricePerPerson, productPeopleLabel } from "@/lib/serving";
 import { cn } from "@/lib/cn";
 import type { Product } from "@/types/product";
 
 export function ProductCard({ product, className }: { product: Product; className?: string }) {
-  const badge = product.isComplete ? "Complet" : getCategoryLabel(product.category);
+  const sharing = isSharing(product);
+  const people = productPeopleLabel(product);
+  const perPerson = pricePerPerson(product);
+  const badge = sharing ? people : product.isComplete ? "Complet" : getCategoryLabel(product.category);
 
   return (
     <article
@@ -39,17 +43,27 @@ export function ProductCard({ product, className }: { product: Product; classNam
         <Link href={`/plats/${product.slug}`} className="font-medium leading-snug text-ink">
           {product.name}
         </Link>
-        <span className="mt-2 inline-flex w-fit rounded-full bg-cream-dark px-2.5 py-1 text-[11px] font-medium text-ink/80">
-          {badge}
-        </span>
+        {sharing && product.includedSides?.length ? (
+          <p className="mt-1 text-sm text-muted">{product.includedSides.join(" · ")}</p>
+        ) : null}
+        {badge ? (
+          <span className="mt-2 inline-flex w-fit rounded-full bg-cream-dark px-2.5 py-1 text-[11px] font-medium text-ink/80">
+            {badge}
+          </span>
+        ) : null}
         <div className="mt-auto flex items-end justify-between pt-4">
           <div>
-            <p className="flex items-center gap-1 text-sm text-ink">
-              <Star className="h-3.5 w-3.5 fill-quince text-quince" />
-              <span className="font-medium">{formatRating(product.rating)}</span>
-              <span className="text-muted">({formatNumber(product.reviews)})</span>
-            </p>
-            <p className="mt-1 text-base font-semibold">{formatPrice(product.price)}</p>
+            {sharing ? null : (
+              <p className="flex items-center gap-1 text-sm text-ink">
+                <Star className="h-3.5 w-3.5 fill-quince text-quince" />
+                <span className="font-medium">{formatRating(product.rating)}</span>
+                <span className="text-muted">({formatNumber(product.reviews)})</span>
+              </p>
+            )}
+            <p className={cn("font-semibold", sharing ? "text-lg" : "mt-1 text-base")}>{formatPrice(product.price)}</p>
+            {perPerson ? (
+              <p className="text-xs text-muted">soit {formatPrice(perPerson)} / pers.</p>
+            ) : null}
           </div>
           <AddToCartButton product={product} />
         </div>

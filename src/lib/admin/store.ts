@@ -20,6 +20,7 @@ import type {
   Promotion,
   StaffUser,
 } from "@/lib/admin/types";
+import { products as catalogProducts } from "@/data/products";
 
 const globalForStore = globalThis as typeof globalThis & { __quinceAdminStoreV3?: AdminStore };
 
@@ -30,7 +31,7 @@ class AdminStore {
   constructor() {
     const persisted = readPersistedState();
     this.state = persisted ?? createInitialState();
-    const patched = this.ensureProfitability();
+    const patched = this.ensureCatalogProducts() || this.ensureProfitability();
     if (!persisted || patched) this.persist();
     else this.diskMtime = storeFileMtime();
   }
@@ -42,12 +43,48 @@ class AdminStore {
     if (!next) return;
     this.state = next;
     this.diskMtime = mtime;
-    if (this.ensureProfitability()) this.persist();
+    if (this.ensureCatalogProducts() || this.ensureProfitability()) this.persist();
   }
 
   private persist() {
     writePersistedState(this.state);
     this.diskMtime = storeFileMtime() || Date.now();
+  }
+
+  private ensureCatalogProducts() {
+    let changed = false;
+    const known = new Set(this.state.products.map((product) => product.id));
+    for (const product of catalogProducts) {
+      const current = this.state.products.find((item) => item.id === product.id);
+      if (!current) {
+        this.state.products.push({
+          ...product,
+          images: [product.image],
+          promoPrice: null,
+          stock: product.servingType === "sharing" ? 12 : 20,
+          minStock: product.servingType === "sharing" ? 4 : 8,
+          reserved: 0,
+          active: true,
+          weightGrams: product.servingType === "sharing" ? 1800 : 400,
+        });
+        changed = true;
+        continue;
+      }
+      if (!current.servingType) {
+        current.servingType = product.servingType;
+        current.servingsMin = product.servingsMin;
+        current.servingsMax = product.servingsMax;
+        current.includedSides = product.includedSides;
+        changed = true;
+      }
+    }
+    for (const product of this.state.products) {
+      if (!product.servingType) {
+        product.servingType = "individual";
+        changed = true;
+      }
+    }
+    return changed;
   }
 
   private ensureProfitability() {
