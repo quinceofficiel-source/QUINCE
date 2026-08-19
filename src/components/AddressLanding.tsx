@@ -88,25 +88,25 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
 
       <section className="relative overflow-hidden pt-16">
         <div className="pointer-events-none absolute -left-24 top-0 h-[520px] w-[70%] -skew-x-12 bg-quince" />
-        <div className="relative mx-auto grid max-w-[1320px] items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:px-8 lg:py-16">
-          <div className="relative hidden h-[340px] lg:block">
+        <div className="relative mx-auto grid max-w-[1320px] items-center gap-5 px-4 py-8 sm:gap-8 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-10 lg:px-8 lg:py-16">
+          <div className="relative h-[200px] sm:h-[260px] lg:h-[340px]">
             <Image
               src={BANNER_IMAGES.delivery}
               alt="Courses et plats Quince prêts à livrer"
               fill
-              className="rounded-[2rem] object-cover shadow-[0_30px_80px_-40px_rgba(17,17,17,0.5)]"
-              sizes="420px"
+              className="rounded-[1.5rem] object-cover shadow-[0_30px_80px_-40px_rgba(17,17,17,0.5)] lg:rounded-[2rem]"
+              sizes="(max-width: 1024px) 100vw, 420px"
               priority
             />
           </div>
           <div>
-            <div className="relative mb-6 hidden overflow-hidden rounded-[2rem] lg:block">
+            <div className="relative mb-5 overflow-hidden rounded-[1.5rem] lg:mb-6 lg:rounded-[2rem]">
               <Image
                 src="/hero-banner.jpg"
                 alt="Plat maison Quince"
                 width={900}
                 height={280}
-                className="h-40 w-full object-cover"
+                className="h-32 w-full object-cover sm:h-36 lg:h-40"
                 priority
               />
             </div>
