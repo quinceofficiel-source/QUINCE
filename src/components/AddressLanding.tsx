@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Box, Clock, Truck, UtensilsCrossed } from "lucide-react";
+import { Box, Clock, Truck, User, UtensilsCrossed } from "lucide-react";
 import { AddressSearch } from "@/components/AddressSearch";
 import { LocationPromptModal } from "@/components/LocationPromptModal";
 import { saveDeliveryLocation } from "@/lib/delivery-actions";
@@ -63,7 +63,14 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
               <>
                 <Link
                   href="/compte?mode=connexion"
-                  className="inline-flex h-10 items-center rounded-full bg-white px-4 text-sm font-medium text-ink shadow-sm"
+                  className="inline-flex h-10 w-10 items-center justify-center text-ink md:hidden"
+                  aria-label="Connexion"
+                >
+                  <User className="h-6 w-6" strokeWidth={2.25} />
+                </Link>
+                <Link
+                  href="/compte?mode=connexion"
+                  className="hidden h-10 items-center rounded-full bg-white px-4 text-sm font-medium text-ink shadow-sm md:inline-flex"
                 >
                   Connexion
                 </Link>
