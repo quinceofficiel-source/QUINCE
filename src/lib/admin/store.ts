@@ -16,11 +16,13 @@ import type {
   AdminProduct,
   AdminState,
   DashboardStats,
+  EditorialCampaign,
   OrderStatus,
   Promotion,
   StaffUser,
 } from "@/lib/admin/types";
 import { products as catalogProducts } from "@/data/products";
+import { seedEditorialCampaigns } from "@/lib/admin/editorial-seed";
 
 const globalForStore = globalThis as typeof globalThis & { __quinceAdminStoreV3?: AdminStore };
 
@@ -31,7 +33,7 @@ class AdminStore {
   constructor() {
     const persisted = readPersistedState();
     this.state = persisted ?? createInitialState();
-    const patched = this.ensureCatalogProducts() || this.ensureProfitability();
+    const patched = this.ensureCatalogProducts() || this.ensureProfitability() || this.ensureEditorialCampaigns();
     if (!persisted || patched) this.persist();
     else this.diskMtime = storeFileMtime();
   }
@@ -43,7 +45,7 @@ class AdminStore {
     if (!next) return;
     this.state = next;
     this.diskMtime = mtime;
-    if (this.ensureCatalogProducts() || this.ensureProfitability()) this.persist();
+    if (this.ensureCatalogProducts() || this.ensureProfitability() || this.ensureEditorialCampaigns()) this.persist();
   }
 
   private persist() {
@@ -85,6 +87,12 @@ class AdminStore {
       }
     }
     return changed;
+  }
+
+  private ensureEditorialCampaigns() {
+    if (this.state.editorialCampaigns?.length) return false;
+    this.state.editorialCampaigns = seedEditorialCampaigns();
+    return true;
   }
 
   private ensureProfitability() {
@@ -170,6 +178,14 @@ class AdminStore {
 
   promotions() {
     return structuredClone(this.state.promotions);
+  }
+
+  editorialCampaigns() {
+    return structuredClone(this.state.editorialCampaigns ?? []);
+  }
+
+  editorialCampaign(id: string) {
+    return this.state.editorialCampaigns?.find((item) => item.id === id) ?? null;
   }
 
   logs() {
@@ -293,6 +309,34 @@ class AdminStore {
     this.log(actor, promo.active ? "Activation promo" : "Désactivation promo", "promotion", id);
     this.persist();
     return structuredClone(promo);
+  }
+
+  upsertEditorialCampaign(campaign: EditorialCampaign, actor: StaffUser, isNew: boolean) {
+    if (!this.state.editorialCampaigns) this.state.editorialCampaigns = [];
+    const index = this.state.editorialCampaigns.findIndex((item) => item.id === campaign.id);
+    if (index >= 0) this.state.editorialCampaigns[index] = campaign;
+    else this.state.editorialCampaigns.unshift(campaign);
+    this.log(actor, isNew ? "Création bannière" : "Modification bannière", "editorial", campaign.id);
+    this.persist();
+    return structuredClone(campaign);
+  }
+
+  toggleEditorialCampaign(id: string, actor: StaffUser) {
+    const campaign = this.state.editorialCampaigns?.find((item) => item.id === id);
+    if (!campaign) return null;
+    campaign.active = !campaign.active;
+    this.log(actor, campaign.active ? "Activation bannière" : "Désactivation bannière", "editorial", id);
+    this.persist();
+    return structuredClone(campaign);
+  }
+
+  deleteEditorialCampaign(id: string, actor: StaffUser) {
+    const before = this.state.editorialCampaigns?.length ?? 0;
+    this.state.editorialCampaigns = (this.state.editorialCampaigns ?? []).filter((item) => item.id !== id);
+    if ((this.state.editorialCampaigns?.length ?? 0) === before) return false;
+    this.log(actor, "Suppression bannière", "editorial", id);
+    this.persist();
+    return true;
   }
 
   markNotificationsRead() {

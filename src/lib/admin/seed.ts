@@ -1,4 +1,5 @@
 import { computeOrderSnapshot } from "@/lib/admin/profitability";
+import { seedEditorialCampaigns } from "@/lib/admin/editorial-seed";
 import { seedProfitability } from "@/lib/admin/profitability-seed";
 import { hashPassword } from "@/lib/admin/crypto";
 import type {
@@ -264,6 +265,7 @@ export function createInitialState(now = new Date()): AdminState {
     customers,
     couriers,
     promotions,
+    editorialCampaigns: seedEditorialCampaigns(now),
     profitability,
     logs: [
       {

@@ -2,14 +2,26 @@
 
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { EditorialPromoBanner } from "@/components/EditorialPromoBanner";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { ProductGrid } from "@/components/ProductGrid";
 import { products } from "@/data/products";
 import { filterProducts } from "@/lib/search";
 import { parseServingFormat, servingTypeFromFormat } from "@/lib/serving";
+import type { EditorialBanner } from "@/lib/editorial";
 import type { CategoryId, Cuisine } from "@/types/product";
 
-export function CatalogView({ title, subtitle }: { title?: string; subtitle?: string }) {
+const FIRST_SECTION = 8;
+
+export function CatalogView({
+  title,
+  subtitle,
+  banner = null,
+}: {
+  title?: string;
+  subtitle?: string;
+  banner?: EditorialBanner | null;
+}) {
   const params = useSearchParams();
   const sharing = parseServingFormat(params.get("format")) === "partage";
   const heading = title ?? (sharing ? "Repas à partager" : "Nos plats");
@@ -36,6 +48,14 @@ export function CatalogView({ title, subtitle }: { title?: string; subtitle?: st
     }, products);
   }, [params]);
 
+  const ordered = useMemo(
+    () => [...filtered].sort((a, b) => Number(b.isPopular) - Number(a.isPopular)),
+    [filtered],
+  );
+  const head = ordered.slice(0, FIRST_SECTION);
+  const tail = ordered.slice(FIRST_SECTION);
+  const showBanner = Boolean(banner && head.length > 0);
+
   return (
     <div className="pb-16">
       <h1 className="font-display text-3xl tracking-tight sm:text-5xl">{heading}</h1>
@@ -44,7 +64,9 @@ export function CatalogView({ title, subtitle }: { title?: string; subtitle?: st
         <FilterSidebar />
         <div>
           <p className="mb-4 text-sm text-muted">{filtered.length} plat{filtered.length > 1 ? "s" : ""}</p>
-          <ProductGrid products={filtered} />
+          <ProductGrid products={head.length ? head : ordered} />
+          {showBanner && banner ? <EditorialPromoBanner banner={banner} className="my-8" /> : null}
+          {tail.length > 0 ? <ProductGrid products={tail} /> : null}
         </div>
       </div>
     </div>

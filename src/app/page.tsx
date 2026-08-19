@@ -3,6 +3,7 @@ import { AddressLanding } from "@/components/AddressLanding";
 import { CatalogView } from "@/components/CatalogView";
 import { Container } from "@/components/Container";
 import { getDeliveryLocation } from "@/lib/delivery";
+import { getActiveEditorialBanner } from "@/lib/editorial-storefront";
 
 export default async function HomePage({
   searchParams,
@@ -19,10 +20,12 @@ export default async function HomePage({
     return <AddressLanding nextPath={nextPath} />;
   }
 
+  const banner = getActiveEditorialBanner();
+
   return (
     <Container className="py-10">
       <Suspense>
-        <CatalogView />
+        <CatalogView banner={banner} />
       </Suspense>
     </Container>
   );

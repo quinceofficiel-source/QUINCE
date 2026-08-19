@@ -183,6 +183,32 @@ export type ProfitabilityState = {
   history: IngredientPricePoint[];
 };
 
+export type EditorialCampaignType =
+  | "subscription"
+  | "offer"
+  | "menu"
+  | "sharing"
+  | "seasonal"
+  | "referral"
+  | "campaign";
+
+export type EditorialCampaign = {
+  id: string;
+  title: string;
+  subtitle: string;
+  buttonLabel: string;
+  buttonLink: string;
+  image: string;
+  backgroundColor: string;
+  textColor: string;
+  badge: string;
+  campaignType: EditorialCampaignType;
+  startsAt: string;
+  endsAt: string;
+  order: number;
+  active: boolean;
+};
+
 export type AdminState = {
   staff: StaffUser[];
   products: AdminProduct[];
@@ -190,9 +216,20 @@ export type AdminState = {
   customers: AdminCustomer[];
   couriers: Courier[];
   promotions: Promotion[];
+  editorialCampaigns: EditorialCampaign[];
   logs: AdminLog[];
   notifications: AdminNotification[];
   profitability: ProfitabilityState;
+};
+
+export const EDITORIAL_TYPE_LABELS: Record<EditorialCampaignType, string> = {
+  subscription: "Routine hebdo",
+  offer: "Offre spéciale",
+  menu: "Nouveau menu",
+  sharing: "Repas à partager",
+  seasonal: "Saisonnier",
+  referral: "Parrainage",
+  campaign: "Campagne",
 };
 
 export type DashboardStats = {

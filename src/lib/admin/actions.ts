@@ -7,7 +7,7 @@ import { verifyPassword } from "@/lib/admin/crypto";
 import { getAdminActor, requireAdmin } from "@/lib/admin/dal";
 import { createAdminSession, destroyAdminSession } from "@/lib/admin/session";
 import { getAdminStore } from "@/lib/admin/store";
-import type { AdminProduct, OrderStatus, Promotion, PromotionType } from "@/lib/admin/types";
+import type { AdminProduct, EditorialCampaign, EditorialCampaignType, OrderStatus, Promotion, PromotionType } from "@/lib/admin/types";
 import { sanitizeCard, sanitizeSettings } from "@/lib/admin/profitability";
 import { saveProductUploads, uniqueImages } from "@/lib/admin/uploads";
 import { ingestCheckoutOrder } from "@/lib/admin/storefront";
@@ -198,6 +198,60 @@ export async function togglePromotion(id: string) {
   const actor = await requireAdmin("promotions.write");
   getAdminStore().togglePromotion(id, actor);
   revalidatePath("/admin", "layout");
+}
+
+export async function saveEditorialCampaign(formData: FormData) {
+  const actor = await requireAdmin("promotions.write");
+  const isNew = formData.get("isNew") === "1";
+  const id = String(formData.get("id") || `edit-${Date.now()}`);
+  const current = getAdminStore().editorialCampaign(id);
+  const uploaded = await saveProductUploads(
+    id,
+    formData.getAll("file").filter((item): item is File => item instanceof File),
+  );
+  const image = uploaded[0] || String(formData.get("image") ?? "").trim() || current?.image || "/hero-banner.jpg";
+  const theme = String(formData.get("theme") ?? "noir");
+  const palette =
+    theme === "jaune"
+      ? { backgroundColor: "#ffd400", textColor: "#111111" }
+      : theme === "blanc"
+        ? { backgroundColor: "#ffffff", textColor: "#111111" }
+        : { backgroundColor: "#111111", textColor: "#ffffff" };
+  const campaign: EditorialCampaign = {
+    id,
+    title: String(formData.get("title") ?? "").trim(),
+    subtitle: String(formData.get("subtitle") ?? "").trim(),
+    buttonLabel: String(formData.get("buttonLabel") ?? "").trim() || "Découvrir",
+    buttonLink: String(formData.get("buttonLink") ?? "").trim() || "/",
+    image,
+    backgroundColor: palette.backgroundColor,
+    textColor: palette.textColor,
+    badge: String(formData.get("badge") ?? "").trim(),
+    campaignType: (String(formData.get("campaignType") ?? "campaign") as EditorialCampaignType),
+    startsAt: new Date(String(formData.get("startsAt") || Date.now())).toISOString(),
+    endsAt: new Date(String(formData.get("endsAt") || Date.now() + 90 * 86400000)).toISOString(),
+    order: Number(formData.get("order") ?? 1) || 1,
+    active: formData.get("active") === "on",
+  };
+  if (!campaign.title) throw new Error("Le titre est obligatoire.");
+  getAdminStore().upsertEditorialCampaign(campaign, actor, isNew);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/");
+  redirect("/admin/editorial");
+}
+
+export async function toggleEditorialCampaign(id: string) {
+  const actor = await requireAdmin("promotions.write");
+  getAdminStore().toggleEditorialCampaign(id, actor);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/");
+}
+
+export async function removeEditorialCampaign(id: string) {
+  const actor = await requireAdmin("promotions.write");
+  getAdminStore().deleteEditorialCampaign(id, actor);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/");
 }
 
 export async function markAdminNotificationsRead() {
