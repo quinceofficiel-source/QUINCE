@@ -46,7 +46,7 @@ export function SearchBar({
   return (
     <div ref={wrapperRef} className={cn("relative w-full", className)}>
       <form onSubmit={submit}>
-        <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-muted" />
+        <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-ink" />
         <input
           type="search"
           value={query}
@@ -58,8 +58,8 @@ export function SearchBar({
           onFocus={() => setOpen(true)}
           placeholder="Rechercher un plat, une envie…"
           className={cn(
-            "w-full rounded-full border border-transparent bg-cream pr-4 pl-11 text-sm text-ink placeholder:text-muted/80 transition",
-            "hover:bg-cream-dark focus:border-quince/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-quince/70",
+            "w-full rounded-full border-0 bg-[#eee] pr-4 pl-11 text-sm text-ink placeholder:text-[#6b6b6b] transition",
+            "hover:bg-[#e6e6e6] focus:bg-white focus:outline-none focus:ring-1 focus:ring-black/10",
             compact ? "h-11" : "h-12",
           )}
           aria-label="Rechercher un plat"

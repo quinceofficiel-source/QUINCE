@@ -4,9 +4,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { catalogFormatHref, parseServingFormat, type ServingFormat } from "@/lib/serving";
 
-const OPTIONS: Array<{ id: ServingFormat; label: string; shortLabel: string; emoji: string }> = [
-  { id: "individuel", label: "Plat individuel", shortLabel: "Plat individuel", emoji: "🍽" },
-  { id: "partage", label: "Repas à partager", shortLabel: "À partager", emoji: "👨‍👩‍👧" },
+const OPTIONS: Array<{ id: ServingFormat; label: string; shortLabel: string }> = [
+  { id: "individuel", label: "Plat individuel", shortLabel: "Plat individuel" },
+  { id: "partage", label: "Repas à partager", shortLabel: "À partager" },
 ];
 
 export function ServingFormatSwitch({
@@ -29,14 +29,13 @@ export function ServingFormatSwitch({
       role="radiogroup"
       aria-label="Type de repas"
       className={cn(
-        "rounded-full bg-cream p-1",
+        "rounded-full bg-[#eee] p-1",
         variant === "bar" ? "flex w-full" : "inline-flex max-w-full",
       )}
     >
       {OPTIONS.map((option) => {
         const selected = current === option.id;
-        const fullLabel = option.label;
-        const compactLabel = option.shortLabel;
+        const label = variant === "bar" ? option.shortLabel : option.label;
         return (
           <button
             key={option.id}
@@ -45,21 +44,20 @@ export function ServingFormatSwitch({
             aria-checked={selected}
             onClick={() => select(option.id)}
             className={cn(
-              "rounded-full px-2.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-200 sm:px-3 sm:text-sm",
-              variant === "bar" ? "min-w-0 flex-1" : "px-3.5",
-              selected ? "bg-ink text-white" : "text-ink hover:bg-white/80",
+              "rounded-full px-3 py-1.5 text-[13px] font-medium whitespace-nowrap text-ink transition duration-200 sm:px-3.5 sm:text-sm",
+              variant === "bar" ? "min-w-0 flex-1" : null,
+              selected
+                ? "bg-white shadow-[0_1px_4px_rgba(0,0,0,0.12)]"
+                : "bg-transparent hover:bg-white/50",
             )}
           >
             {variant === "inline" ? (
               <>
-                <span className="mr-1.5 hidden xl:inline" aria-hidden>
-                  {option.emoji}
-                </span>
-                <span className="xl:hidden">{compactLabel}</span>
-                <span className="hidden xl:inline">{fullLabel}</span>
+                <span className="xl:hidden">{option.shortLabel}</span>
+                <span className="hidden xl:inline">{option.label}</span>
               </>
             ) : (
-              compactLabel
+              label
             )}
           </button>
         );
