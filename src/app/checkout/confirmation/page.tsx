@@ -14,7 +14,7 @@ export default function ConfirmationPage() {
     return (
       <Container className="py-16 text-center">
         <h1 className="font-display text-4xl">Aucune commande récente</h1>
-        <Button href="/plats" className="mt-6">
+        <Button href="/" className="mt-6">
           Voir les plats
         </Button>
       </Container>

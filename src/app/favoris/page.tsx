@@ -16,7 +16,7 @@ export default function FavorisPage() {
         <div className="mt-10 rounded-[1.5rem] bg-white px-6 py-16 text-center">
           <p className="font-medium">Aucun favori pour le moment</p>
           <p className="mt-2 text-sm text-muted">Touchez le cœur sur une carte pour l’enregistrer.</p>
-          <Button href="/plats" className="mt-6">
+          <Button href="/" className="mt-6">
             Découvrir les plats
           </Button>
         </div>

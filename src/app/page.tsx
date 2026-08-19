@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { AddressLanding } from "@/components/AddressLanding";
-import { StoreHome } from "@/components/StoreHome";
+import { CatalogView } from "@/components/CatalogView";
+import { Container } from "@/components/Container";
 import { getDeliveryLocation } from "@/lib/delivery";
 
 export default async function HomePage({
@@ -10,11 +12,18 @@ export default async function HomePage({
   const location = await getDeliveryLocation();
   const params = await searchParams;
   const nextRaw = Array.isArray(params.next) ? params.next[0] : params.next;
-  const nextPath = nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//") && !nextRaw.startsWith("/admin") ? nextRaw : "/";
+  const nextPath =
+    nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//") && !nextRaw.startsWith("/admin") ? nextRaw : "/";
 
   if (!location) {
     return <AddressLanding nextPath={nextPath} />;
   }
 
-  return <StoreHome />;
+  return (
+    <Container className="py-10">
+      <Suspense>
+        <CatalogView />
+      </Suspense>
+    </Container>
+  );
 }

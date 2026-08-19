@@ -20,7 +20,7 @@ export function ServingFormatSwitch({
   const current = parseServingFormat(params.get("format"));
 
   function select(format: ServingFormat) {
-    if (format === current && (pathname === "/plats" || pathname === "/recherche")) return;
+    if (format === current && (pathname === "/" || pathname === "/plats" || pathname === "/recherche")) return;
     router.push(catalogFormatHref(format, pathname, params.toString()), { scroll: false });
   }
 

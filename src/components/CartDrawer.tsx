@@ -59,7 +59,7 @@ export function CartDrawer() {
             <div className="py-16 text-center">
               <p className="font-medium">Votre panier est vide</p>
               <p className="mt-1 text-sm text-muted">Ajoutez quelques plats maison pour commencer.</p>
-              <Button href="/plats" className="mt-6" onClick={closeCart}>
+              <Button href="/" className="mt-6" onClick={closeCart}>
                 Découvrir nos plats
               </Button>
             </div>
@@ -118,7 +118,7 @@ export function CartDrawer() {
             <Button href="/checkout" variant="dark" className="w-full" onClick={closeCart}>
               Continuer vers le paiement
             </Button>
-            <Link href="/plats" onClick={closeCart} className="mt-3 block text-center text-sm text-muted hover:text-ink">
+            <Link href="/" onClick={closeCart} className="mt-3 block text-center text-sm text-muted hover:text-ink">
               Continuer mes achats
             </Link>
           </div>

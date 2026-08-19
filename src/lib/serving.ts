@@ -47,8 +47,8 @@ export function catalogFormatHref(format: ServingFormat, pathname: string, searc
   const raw = search.startsWith("?") ? search.slice(1) : search;
   const params = new URLSearchParams(raw);
   params.set("format", format);
-  if (pathname === "/plats" || pathname === "/recherche") {
-    return `${pathname}?${params.toString()}`;
+  if (pathname === "/recherche") {
+    return `/recherche?${params.toString()}`;
   }
-  return `/plats?format=${format}`;
+  return `/?${params.toString()}`;
 }

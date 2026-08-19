@@ -130,7 +130,7 @@ export function CheckoutFlow() {
       <div className="rounded-[1.75rem] bg-white px-6 py-16 text-center">
         <h1 className="font-display text-4xl">Votre panier est vide</h1>
         <p className="mt-3 text-muted">Ajoutez quelques plats avant de passer commande.</p>
-        <Button href="/plats" className="mt-6">
+        <Button href="/" className="mt-6">
           Voir les plats
         </Button>
       </div>

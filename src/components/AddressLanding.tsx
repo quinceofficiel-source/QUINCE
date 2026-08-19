@@ -129,7 +129,7 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
                           title="À l’unité"
                           text="Nos plats du jour"
                           disabled={busy}
-                          onClick={() => enter("/plats", "now")}
+                          onClick={() => enter("/", "now")}
                         />
                       </div>
                     </div>

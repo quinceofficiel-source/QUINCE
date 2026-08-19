@@ -15,7 +15,7 @@ const columns = [
   {
     title: "Commander",
     links: [
-      { href: "/plats", label: "Nos plats" },
+      { href: "/", label: "Nos plats" },
       { href: "/composer-ma-box", label: "Composer ma box" },
       { href: "/comment-ca-marche", label: "Comment ça marche ?" },
       { href: "/livraison", label: "Livraison" },
