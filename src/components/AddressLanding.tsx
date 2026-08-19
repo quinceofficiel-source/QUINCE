@@ -51,7 +51,7 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
     <div className="min-h-screen bg-white">
       <header className="absolute inset-x-0 top-0 z-20">
         <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Logo />
+          <Logo variant="landing" />
           <div className="flex items-center gap-2">
             {account ? (
               <Link href="/compte" className="rounded-full bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm">
