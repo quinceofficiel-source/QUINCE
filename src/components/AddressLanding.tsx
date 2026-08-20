@@ -87,30 +87,32 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
       </header>
 
       <section className="relative min-h-[100svh] overflow-hidden">
-        <Image
-          src="/landing-hero.png"
-          alt="Plat maison Quince, quinoa, poulet et légumes"
-          fill
-          className="object-cover object-[72%_center]"
-          sizes="100vw"
-          priority
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/55 via-transparent to-white/80 sm:bg-gradient-to-r sm:from-white/35 sm:via-transparent sm:to-transparent" />
+        <picture>
+          <source media="(min-width: 1024px)" srcSet="/landing-hero.png" />
+          <img
+            src="/landing-hero-mobile.png"
+            alt="Plat maison Quince, quinoa, poulet et légumes"
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover object-[center_12%] lg:object-[72%_center]"
+          />
+        </picture>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/35 via-transparent to-transparent lg:bg-gradient-to-r lg:from-white/35 lg:via-transparent lg:to-transparent" />
 
-        <div className="relative mx-auto flex min-h-[100svh] max-w-[1320px] items-center px-4 pb-16 pt-24 sm:px-6 lg:px-8">
-          <div className="w-full max-w-[560px]">
-            <h1 className="font-display text-[2.35rem] leading-[1.05] tracking-tight sm:text-5xl lg:text-[3.35rem]">
+        <div className="relative mx-auto flex min-h-[100svh] max-w-[1320px] items-start px-5 pb-10 pt-[4.75rem] sm:px-6 lg:items-center lg:px-8 lg:pb-16 lg:pt-24">
+          <div className="w-full max-w-[560px] lg:mx-0">
+            <h1 className="font-display text-[2.15rem] leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.35rem]">
               Vos plats maison préférés, livrés chez vous.
             </h1>
-            <div className="mt-7 rounded-[1.6rem] bg-white p-4 shadow-[0_24px_60px_-32px_rgba(17,17,17,0.35)] sm:p-5">
-              <p className="mb-3 text-sm font-medium">Entrez une adresse pour découvrir vos options</p>
+            <div className="mt-6 lg:mt-7 lg:rounded-[1.6rem] lg:bg-white lg:p-5 lg:shadow-[0_24px_60px_-32px_rgba(17,17,17,0.35)]">
+              <p className="mb-3 hidden text-sm font-medium lg:block">Entrez une adresse pour découvrir vos options</p>
               <AddressSearch
+                variant="hero"
                 autoFocus={!locationPromptOpen}
                 selected={picked}
                 onSelect={setPicked}
               />
               {picked && coverage ? (
-                <div className="mt-5 border-t border-line pt-4">
+                <div className="mt-4 rounded-[1.4rem] bg-white p-4 shadow-[0_16px_40px_-24px_rgba(17,17,17,0.35)] lg:mt-5 lg:rounded-none lg:bg-transparent lg:p-0 lg:shadow-none lg:border-t lg:border-line lg:pt-4">
                   {coverage.status === "available" ? (
                     <div>
                       <p className="text-sm font-semibold text-forest">
