@@ -11,7 +11,7 @@ import { saveDeliveryLocation } from "@/lib/delivery-actions";
 import { coverageFor, SERVED_CITIES } from "@/lib/delivery-zones";
 import { useDelivery } from "@/context/DeliveryContext";
 import type { BanSuggestion } from "@/lib/ban";
-import { BANNER_IMAGES, getPopular } from "@/data/products";
+import { getPopular } from "@/data/products";
 import { Logo } from "@/components/Logo";
 import { STORAGE_KEYS } from "@/lib/storage";
 import { useStoredJson } from "@/lib/useStoredJson";
@@ -86,37 +86,23 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
         </div>
       </header>
 
-      <section className="relative overflow-hidden pt-16">
-        <div className="pointer-events-none absolute -left-24 top-0 h-[520px] w-[70%] -skew-x-12 bg-quince" />
-        <div className="relative mx-auto grid max-w-[1320px] items-center gap-5 px-4 py-8 sm:gap-8 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-10 lg:px-8 lg:py-16">
-          <div className="relative h-[200px] sm:h-[260px] lg:h-[340px]">
-            <Image
-              src={BANNER_IMAGES.delivery}
-              alt="Courses et plats Quince prêts à livrer"
-              fill
-              className="rounded-[1.5rem] object-cover shadow-[0_30px_80px_-40px_rgba(17,17,17,0.5)] lg:rounded-[2rem]"
-              sizes="(max-width: 1024px) 100vw, 420px"
-              priority
-            />
-          </div>
-          <div>
-            <div className="relative mb-5 overflow-hidden rounded-[1.5rem] lg:mb-6 lg:rounded-[2rem]">
-              <Image
-                src="/hero-banner.jpg"
-                alt="Plat maison Quince"
-                width={900}
-                height={280}
-                className="h-32 w-full object-cover sm:h-36 lg:h-40"
-                priority
-              />
-            </div>
-            <h1 className="font-display text-[2.1rem] leading-[1.1] tracking-tight sm:text-5xl">
+      <section className="relative min-h-[100svh] overflow-hidden">
+        <Image
+          src="/landing-hero.png"
+          alt="Plat maison Quince, quinoa, poulet et légumes"
+          fill
+          className="object-cover object-[72%_center]"
+          sizes="100vw"
+          priority
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/55 via-transparent to-white/80 sm:bg-gradient-to-r sm:from-white/35 sm:via-transparent sm:to-transparent" />
+
+        <div className="relative mx-auto flex min-h-[100svh] max-w-[1320px] items-center px-4 pb-16 pt-24 sm:px-6 lg:px-8">
+          <div className="w-full max-w-[560px]">
+            <h1 className="font-display text-[2.35rem] leading-[1.05] tracking-tight sm:text-5xl lg:text-[3.35rem]">
               Vos plats maison préférés, livrés chez vous.
             </h1>
-            <p className="mt-4 max-w-xl text-sm text-ink/70 sm:text-base">
-              Entrez votre adresse exacte pour voir si Quince livre dans votre ville, et les options disponibles.
-            </p>
-            <div className="mt-6 rounded-[1.6rem] bg-white p-4 shadow-[0_24px_60px_-32px_rgba(17,17,17,0.35)] sm:p-5">
+            <div className="mt-7 rounded-[1.6rem] bg-white p-4 shadow-[0_24px_60px_-32px_rgba(17,17,17,0.35)] sm:p-5">
               <p className="mb-3 text-sm font-medium">Entrez une adresse pour découvrir vos options</p>
               <AddressSearch
                 autoFocus={!locationPromptOpen}
@@ -194,7 +180,7 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
               ) : null}
             </div>
             {!account ? (
-              <p className="mt-4 text-sm text-ink/70">
+              <p className="mt-4 text-sm text-ink/80">
                 Ou{" "}
                 <Link href="/compte?mode=connexion" className="font-semibold underline underline-offset-2">
                   Connexion
@@ -206,7 +192,7 @@ export function AddressLanding({ nextPath = "/" }: { nextPath?: string }) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1320px] px-4 pb-16 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-[1320px] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-4 flex items-center gap-2 text-sm text-muted">
           <Clock className="h-4 w-4" />
           Plats cuisinés chaque jour · livraison dans une box isolée
