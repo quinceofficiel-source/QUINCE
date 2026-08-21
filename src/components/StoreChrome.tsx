@@ -6,6 +6,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { CategoryCarousel } from "@/components/CategoryCarousel";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { MobileStoreDock } from "@/components/MobileStoreDock";
 import { DeliveryProvider } from "@/context/DeliveryContext";
 import type { DeliveryLocation } from "@/lib/delivery-zones";
 
@@ -45,8 +46,11 @@ export function StoreChrome({
               </div>
             </div>
           ) : null}
-          <main className="min-w-0 overflow-x-clip">{children}</main>
-          <Footer />
+          <main className="min-w-0 overflow-x-clip pb-36 lg:pb-0">{children}</main>
+          <div className="hidden lg:block">
+            <Footer />
+          </div>
+          <MobileStoreDock />
           <CartDrawer />
         </>
       )}

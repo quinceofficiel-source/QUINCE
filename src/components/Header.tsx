@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, MapPin, Menu, ShoppingBag, User, X } from "lucide-react";
+import { Bell, ChevronDown, MapPin, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { AddressModal } from "@/components/AddressModal";
 import { Logo } from "@/components/Logo";
@@ -61,45 +61,61 @@ function HeaderBar() {
         scrolled ? "shadow-[0_8px_24px_-18px_rgba(0,0,0,0.35)]" : "border-b border-black/5",
       )}
     >
-      <div className="mx-auto flex w-full min-w-0 max-w-[1320px] flex-col gap-2 px-4 py-2.5 sm:px-6 lg:h-[72px] lg:flex-row lg:items-center lg:gap-5 lg:px-8 lg:py-0">
-        <div className="flex min-w-0 items-center gap-1.5">
+      <div className="lg:hidden">
+        <div className="flex items-center justify-between gap-3 px-4 pt-2.5 pb-1">
           <button
             type="button"
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink hover:bg-[#f3f3f3]"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Ouvrir le menu"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-
-          <Logo className="min-w-0" />
-
-          <div className="ml-2 hidden min-w-0 lg:block">
-            <Suspense fallback={<div className="h-9 w-[260px] rounded-full bg-[#eee]" />}>
-              <ServingFormatSwitch />
-            </Suspense>
-          </div>
-
-          <AddressLine
-            className="ml-1 hidden min-w-0 max-w-[220px] xl:inline-flex"
-            label={addressText}
-            ariaLabel={location ? `Modifier l’adresse, ${location.street}` : "Choisir une adresse de livraison"}
             onClick={() => setAddressOpen(true)}
-          />
-
-          <div className="ml-auto lg:hidden">
-            <CartButton itemCount={itemCount} subtotal={subtotal} lastAddedId={lastAddedId} onClick={openCart} />
-          </div>
+            className="min-w-0 text-left"
+            aria-label={location ? `Lieu actuel, ${location.street}` : "Choisir une adresse de livraison"}
+          >
+            <span className="inline-flex items-center gap-1 text-[17px] font-bold leading-none tracking-tight">
+              Lieu actuel
+              <ChevronDown className="h-4 w-4" strokeWidth={2.4} />
+            </span>
+            {location ? (
+              <span className="mt-1 block truncate text-xs text-muted">
+                {location.street}, {location.city}
+              </span>
+            ) : (
+              <span className="mt-1 block text-xs text-muted">Choisir une adresse</span>
+            )}
+          </button>
+          <Link
+            href={account ? "/compte" : `/compte?mode=connexion&next=${next}`}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink hover:bg-[#f3f3f3]"
+            aria-label="Notifications"
+          >
+            <Bell className="h-[22px] w-[22px]" strokeWidth={2} />
+          </Link>
         </div>
-
-        <div className="lg:hidden">
+        <div className="px-4 pb-2.5">
           <Suspense fallback={<div className="h-9 w-full rounded-full bg-[#eee]" />}>
             <ServingFormatSwitch variant="bar" />
           </Suspense>
         </div>
+      </div>
+
+      <div className="mx-auto hidden w-full min-w-0 max-w-[1320px] items-center gap-5 px-8 lg:flex lg:h-[72px]">
+        <button
+          type="button"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink hover:bg-[#f3f3f3]"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Ouvrir le menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        <Logo className="min-w-0" />
+
+        <div className="ml-2 min-w-0">
+          <Suspense fallback={<div className="h-9 w-[260px] rounded-full bg-[#eee]" />}>
+            <ServingFormatSwitch />
+          </Suspense>
+        </div>
 
         <AddressLine
-          className="xl:hidden"
+          className="ml-1 hidden min-w-0 max-w-[220px] xl:inline-flex"
           label={addressText}
           ariaLabel={location ? `Modifier l’adresse, ${location.street}` : "Choisir une adresse de livraison"}
           onClick={() => setAddressOpen(true)}
@@ -109,7 +125,7 @@ function HeaderBar() {
           <SearchBar />
         </div>
 
-        <div className="hidden shrink-0 items-center gap-2 lg:flex">
+        <div className="flex shrink-0 items-center gap-2">
           <CartButton itemCount={itemCount} subtotal={subtotal} lastAddedId={lastAddedId} onClick={openCart} />
           {account ? (
             <div ref={accountRef} className="relative">
